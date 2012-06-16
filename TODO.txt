@@ -1,0 +1,31 @@
+Prerequisites
+================
+
+Entrance/Exiting: A user will be able to enter this nether world once every 12-24 hours, please use a constant again in the main or a help
+ class, to define this time length. The user should also have the permission node "Deity.nether.general", for entrance permission, and if 
+ they have "Deity.nether.override", they can join any time they so desire. Once they are in this world they have 1 hour to do what they 
+ need to do, please use another constant for this time length. When their hour is up they will get removed from this world and brought 
+ back to the main world. If you die before you hour is up in the nether you lose the remaining time and get ported back to the main world. 
+ We would like you to use a MySQL database for the users time in the world. Enter a row for the user when they join the world, and store 
+ the name of the user and the time of entrance. Then when the user exits store how long they were in the nether in another column so you 
+ can verify time constraints later on . Please also link the entrance/exit to commands, you can use the /nether command with any sort of 
+ arguments you so desire.
+
+Spawn: The spawn location of the world should always be at x:0, z:0, however the height should not be located in any blocks. We probably
+will require pasting a schematic at the spawn location, however dont worry about that, just put a //TODO where that should be located,
+so we know where to put the code for it. 
+
+Inventory: When entering the nether you are allowed to bring any sort of tools/swords/armour/food if any other items are present in their
+inventory the users will be notified of this and the access denied, until they remove those items from their inventory. As for 
+restrictions on bringing items back, there is none.
+
+Mobs: Mobs need not be altered with one exception. Pigman should have a 10% chance of dropping gold, please also make this 10% a constant
+that we can change later. 
+
+
+TODO
+=======
+
+- MySQL
+- Telportation
+- More values to Config
