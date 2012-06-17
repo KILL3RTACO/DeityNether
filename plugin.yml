@@ -1,0 +1,9 @@
+name: DeityNether
+main: com.imdeity.deitynether.DeityNether
+version: 0.1
+description: Nether plugin for ImDeity Kingdoms
+commands:
+  nether:
+    description: Go to the nether
+    usage: /nether
+    aliases: n
