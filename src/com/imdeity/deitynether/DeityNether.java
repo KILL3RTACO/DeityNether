@@ -27,10 +27,12 @@ public class DeityNether extends JavaPlugin{
 		addDataFolders();
 		getCommand("nether").setExecutor(executor);
 		getServer().getPluginManager().registerEvents(new NetherWatcher(this), this);
+		info("Loading config...");
+		config.loadDefaults();
 	}
 	
 	public void info(String message){
-		Logger.getLogger("Minecraft").info("[DeityNether]" + message);
+		Logger.getLogger("Minecraft").info("[DeityNether] " + message);
 	}
 	
 	private void addDataFolders(){
@@ -52,8 +54,6 @@ public class DeityNether extends JavaPlugin{
 			}else{
 				file.mkdir();
 			}
-		}else{
-			info("/" + file.getPath().substring(20) + " found");
 		}
 	}
 	
