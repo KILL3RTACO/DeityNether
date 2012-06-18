@@ -14,7 +14,7 @@ public class DeityNether extends JavaPlugin{
 
 	private File configFile = new File("plugins/DeityNether/config.yml"); //No need for File.pathSeparator, as '/' works with any OS
 	public Config config = new Config(configFile);
-	public static String HEADER = "§7[§c*§7ImDeity§c*§7]§f ";
+	public static String HEADER = "§7[§c*ImDeity§7]§f ";
 	public static String GENERAL_PERMISSION = "Deity.nether.general";
 	public static String OVERRIDE_PERMISSION = "Deity.nether.override";
 	

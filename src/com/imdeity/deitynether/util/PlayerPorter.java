@@ -34,4 +34,8 @@ public class PlayerPorter {
 		player.teleport(new Location(overworld, 100, 0, 100));
 	}
 	
+	private boolean testPlayerInventory(Player p){
+		return false;
+	}
+	
 }

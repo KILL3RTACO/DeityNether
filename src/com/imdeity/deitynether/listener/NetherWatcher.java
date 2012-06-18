@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -32,6 +33,8 @@ public class NetherWatcher implements Listener{
 				event.getDrops().add(drop);
 //				plugin.getServer().getWorld(plugin.config.getNetherWorldName()).dropItem(entity.getLocation(), drop);
 			}
+		}else if(entity instanceof Player){
+			//TODO set MySql so they can't come back
 		}
 	}
 	
