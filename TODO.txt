@@ -25,8 +25,7 @@ that we can change later.
 
 TODO
 =======
-
-- MySQL
-- Telportation
-- World Generation
-- More values to Config
+	
+- MySQL (as well as corresponding config values)
+- Telportation (done needs to be implemented)
+- World Deletion/Generation
