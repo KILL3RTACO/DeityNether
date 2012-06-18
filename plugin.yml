@@ -5,5 +5,5 @@ description: Nether plugin for ImDeity Kingdoms
 commands:
   nether:
     description: Go to the nether
-    usage: /nether
+    usage: /nether [regen]
     aliases: n
