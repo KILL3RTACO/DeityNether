@@ -1,8 +1,7 @@
 package com.imdeity.deitynether.util;
 
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.imdeity.deitynether.DeityNether;
 
@@ -17,25 +16,30 @@ public class PlayerPorter {
 	
 	public void sendToNether(Player player){
 		if(player.hasPermission(DeityNether.GENERAL_PERMISSION)){
-			//TODO test player.getInventory()
 			//TODO test time left till next port
-			//TODO port to nether
+			if(testPlayerInventory(player)){
+				player.teleport(plugin.config.getNetherWorldSpawn());
+			}else{
+				player.sendMessage(DeityNether.HEADER + "§cYou have items in your inventory that are not allowed to be brought into the" +
+						" nether, please remove them and try again");
+			}
 		}else if(player.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
-			//TODO ? test player.getInventory()
-			//TODO ? test tie until next port
-			//TODO port to nether
+			player.teleport(plugin.config.getNetherWorldSpawn());
 		}else{
 			player.sendMessage(DeityNether.HEADER + "§cYou don't have permission");
 		}
 	}
 	
 	public void sendToOverworld(Player player){
-		World overworld = plugin.getServer().getWorld(plugin.config.getMainWorldName());
-		player.teleport(new Location(overworld, 100, 0, 100));
+		player.teleport(plugin.config.getMainWorldSpawn());
 	}
 	
 	private boolean testPlayerInventory(Player p){
-		return false;
+		for(ItemStack i : p.getInventory()){
+			if(i != null)
+				if(!AllowedItems.contains(i.getTypeId())) return false;
+		}
+		return true;
 	}
 	
 }
