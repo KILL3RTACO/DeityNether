@@ -1,5 +1,6 @@
 package com.imdeity.deitynether.util;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,6 +19,7 @@ public class PlayerPorter {
 		if(player.hasPermission(DeityNether.GENERAL_PERMISSION)){
 			//TODO test time left till next port
 			if(testPlayerInventory(player)){
+				player.getInventory().remove(new ItemStack(Material.GOLD_BLOCK, plugin.config.getNeededGold()));
 				player.teleport(plugin.config.getNetherWorldSpawn());
 			}else{
 				player.sendMessage(DeityNether.HEADER + "§cYou have items in your inventory that are not allowed to be brought into the" +
@@ -35,11 +37,21 @@ public class PlayerPorter {
 	}
 	
 	private boolean testPlayerInventory(Player p){
+		int gold = 0;
 		for(ItemStack i : p.getInventory()){
 			if(i != null)
-				if(!AllowedItems.contains(i.getTypeId())) return false;
+				if(i.getType() != Material.GOLD_BLOCK){
+					if(!AllowedItems.contains(i.getTypeId())) return false;
+				}else{
+					gold += i.getAmount();
+				}
 		}
-		return true;
+		
+		if(gold >= plugin.config.getNeededGold()){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 }
