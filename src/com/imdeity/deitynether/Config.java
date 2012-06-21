@@ -19,15 +19,17 @@ public class Config{
 	}
 	
 	public void loadDefaults(){
-		if(!config.contains("world.nether.days-until-next-regen"))
+		if(!config.contains("world.nether.days-until-next-regen"))			//World options
 			config.set("world.nether.days-until-next-regen", 7);
-		if(!config.contains("world.main.name"))
-			config.set("world.main.name", "world");
 		if(!config.contains("world.nether.name"))
 			config.set("world.nether.name", "world_nether");
 		if(!config.contains("world.nether.pigman-gold-drop-chance"))
 			config.set("world.nether.pigman-gold-drop-chance", 10);
-		if(!config.contains("spawn.main-world.x"))
+		if(!config.contains("world.nether.gold-blocks-need"))
+			config.set("world.nether.gold-blocks-needed", 1);
+		if(!config.contains("world.main.name"))
+			config.set("world.main.name", "world");
+		if(!config.contains("spawn.main-world.x"))							//World spawn options
 			config.set("spawn.main.x", 100);
 		if(!config.contains("spawn.main.y"))
 			config.set("spawn.main.y", 64);
@@ -39,6 +41,16 @@ public class Config{
 			config.set("spawn.nether.y", 64);
 		if(!config.contains("spawn.nether.z"))
 			config.set("spawn.nether.z", 100);
+		if(!config.contains("sql.database.name"))							//MySQL options
+			config.set("mysql.database.name", "kingdoms");
+		if(!config.contains("mysql.database.username"))
+			config.set("mysql.database.username", "root");
+		if(!config.contains("mysql.datatbase.password"))
+			config.set("mysql.database.password", "root");
+		if(!config.contains("mysql.server.address"))
+			config.set("mysql.server.address", "localhost");
+		if(!config.contains("mysql.server.port"))
+			config.set("mysql.server.port", 3306);
 		save();
 	}
 	
@@ -51,35 +63,67 @@ public class Config{
 	}
 	
 	public int getDaysUntilNextRegen(){
-		return config.getInt("world.nether.days-until-next-regen");
+		return getInt("world.nether.days-until-next-regen");
 	}
 	
 	public int getDropChance(){
-		return config.getInt("world.nether.pigman-gold-drop-chance");
+		return getInt("world.nether.pigman-gold-drop-chance");
 	}
 	
 	public String getMainWorldName(){
-		return config.getString("world.main.name");
+		return getString("world.main.name");
 	}
 	
 	public Location getMainWorldSpawn(){
-		int x = config.getInt("spawn.main.x");
-		int y = config.getInt("spawn.main.y");
-		int z = config.getInt("spawn.main.z");
+		int x = getInt("spawn.main.x");
+		int y = getInt("spawn.main.y");
+		int z = getInt("spawn.main.z");
 		World world = Bukkit.getServer().getWorld(getMainWorldName());
 		return new Location(world, x, y, z);
 	}
 	
+	public int getNeededGold(){
+		return getInt("world.nether.gold-blocks-needed");
+	}
+	
+	public String getMySqlDatabaseName(){
+		return getString("mysql.database.name");
+	}
+	
+	public String getMySqlDatabaseUsername(){
+		return getString("mysql.database.name");
+	}
+	
+	public String getMySqlDatabasePassword(){
+		return getString("mysql.database.password");
+	}
+	
+	public String getMySqlServerAddress(){
+		return getString("mysql.server.addess");
+	}
+	
+	public int getMySqlServerPort(){
+		return getInt("mysql.server.port");
+	}
+	
 	public Location getNetherWorldSpawn(){
-		int x = config.getInt("spawn.nether.x");
-		int y = config.getInt("spawn.nether.y");
-		int z = config.getInt("spawn.nether.z");
+		int x = getInt("spawn.nether.x");
+		int y = getInt("spawn.nether.y");
+		int z = getInt("spawn.nether.z");
 		World world = Bukkit.getServer().getWorld(getNetherWorldName());
 		return new Location(world, x, y, z);
 	}
 	
 	public String getNetherWorldName(){
-		return config.getString("world.nether.name");
+		return getString("world.nether.name");
+	}
+	
+	public String getString(String path){
+		return config.getString(path);
+	}
+	
+	public int getInt(String path){
+		return config.getInt(path);
 	}
 	
 }
