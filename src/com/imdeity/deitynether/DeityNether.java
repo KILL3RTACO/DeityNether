@@ -2,6 +2,7 @@ package com.imdeity.deitynether;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import org.bukkit.command.CommandExecutor;
@@ -9,26 +10,38 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.imdeity.deitynether.cmd.NetherCommand;
 import com.imdeity.deitynether.listener.NetherWatcher;
+import com.imdeity.deitynether.sql.NetherSQL;
 
 public class DeityNether extends JavaPlugin{
 
 	private File configFile = new File("plugins/DeityNether/config.yml"); //No need for File.pathSeparator, as '/' works with any OS
 	public Config config = new Config(configFile);
-	public static String HEADER = "§7[§c*ImDeity§7]§f ";
-	public static String GENERAL_PERMISSION = "Deity.nether.general";
-	public static String OVERRIDE_PERMISSION = "Deity.nether.override";
+	public static  NetherSQL mysql = null;
+	public static boolean hasError = false;
+	public static final String HEADER = "§7[§c*ImDeity*§7]§f ";
+	public static final String GENERAL_PERMISSION = "Deity.nether.general";
+	public static final String OVERRIDE_PERMISSION = "Deity.nether.override";
 	
 	public void onDisable(){
-		
+		info("Disabled");
 	}
 	
 	public void onEnable(){
 		CommandExecutor executor = new NetherCommand(this);
 		addDataFolders();
 		getCommand("nether").setExecutor(executor);
-		getServer().getPluginManager().registerEvents(new NetherWatcher(this), this);
+		try {
+			setup();
+			info("Connected!");
+		} catch (Exception e) {
+			info("MySQL setup incorrectly, check the config.yml");
+		}
+		if(!hasError){
+			getServer().getPluginManager().registerEvents(new NetherWatcher(this), this);
+		}
 		info("Loading config...");
 		config.loadDefaults();
+		info("Enabled");
 	}
 	
 	public void info(String message){
@@ -55,6 +68,10 @@ public class DeityNether extends JavaPlugin{
 				file.mkdir();
 			}
 		}
+	}
+	
+	private void setup() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
+			mysql = new NetherSQL(this);
 	}
 	
 }
