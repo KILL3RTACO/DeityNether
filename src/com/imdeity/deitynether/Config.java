@@ -41,11 +41,11 @@ public class Config{
 			config.set("spawn.nether.y", 64);
 		if(!config.contains("spawn.nether.z"))
 			config.set("spawn.nether.z", 100);
-		if(!config.contains("sql.database.name"))							//MySQL options
+		if(!config.contains("mysql.database.name"))							//MySQL options
 			config.set("mysql.database.name", "kingdoms");
 		if(!config.contains("mysql.database.username"))
 			config.set("mysql.database.username", "root");
-		if(!config.contains("mysql.datatbase.password"))
+		if(!config.contains("mysql.database.password"))
 			config.set("mysql.database.password", "root");
 		if(!config.contains("mysql.server.address"))
 			config.set("mysql.server.address", "localhost");
@@ -91,7 +91,7 @@ public class Config{
 	}
 	
 	public String getMySqlDatabaseUsername(){
-		return getString("mysql.database.name");
+		return getString("mysql.database.username");
 	}
 	
 	public String getMySqlDatabasePassword(){
@@ -99,7 +99,7 @@ public class Config{
 	}
 	
 	public String getMySqlServerAddress(){
-		return getString("mysql.server.addess");
+		return getString("mysql.server.address");
 	}
 	
 	public int getMySqlServerPort(){
