@@ -17,15 +17,23 @@ public class PlayerPorter {
 	
 	public void sendToNether(Player player){
 		if(player.hasPermission(DeityNether.GENERAL_PERMISSION)){
-			//TODO test time left till next port
-			if(testPlayerInventory(player)){
-				player.getInventory().remove(new ItemStack(Material.GOLD_BLOCK, plugin.config.getNeededGold()));
-				player.teleport(plugin.config.getNetherWorldSpawn());
+			if(player.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
+				player.sendMessage(DeityNether.HEADER + "§cYou are already in the nether");
 			}else{
-				player.sendMessage(DeityNether.HEADER + "§cYou have items in your inventory that are not allowed to be brought into the" +
-						" nether, please remove them and try again");
+				//TODO test time left till next port
+				int result = testPlayerInventory(player);
+				if(result == 1){
+					player.getInventory().remove(new ItemStack(Material.GOLD_BLOCK, plugin.config.getNeededGold()));
+					player.sendMessage(DeityNether.HEADER + "§aTeleporting you to the nether...");
+					player.teleport(plugin.config.getNetherWorldSpawn());
+				}else if(result == 0){
+					player.sendMessage(DeityNether.HEADER + "§cYou have items in your inventory that are not allowed in the nether. Remove them and try again");
+				}else if(result == -1){
+					player.sendMessage(DeityNether.HEADER + "§cYou do not have enough gold to go to the nether. Go get more.");
+				}
 			}
 		}else if(player.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
+			player.sendMessage(DeityNether.HEADER + "§aTeleporting you to the nether...");
 			player.teleport(plugin.config.getNetherWorldSpawn());
 		}else{
 			player.sendMessage(DeityNether.HEADER + "§cYou don't have permission");
@@ -33,24 +41,29 @@ public class PlayerPorter {
 	}
 	
 	public void sendToOverworld(Player player){
-		player.teleport(plugin.config.getMainWorldSpawn());
+		if(player.getWorld() == plugin.getServer().getWorld(plugin.config.getMainWorldName())){
+			player.sendMessage(DeityNether.HEADER + "§cYou aren't in the nether");
+		}else{
+			player.sendMessage(DeityNether.HEADER + "§aTeleporting you to the main world...");
+			player.teleport(plugin.config.getMainWorldSpawn());
+		}
 	}
 	
-	private boolean testPlayerInventory(Player p){
+	private int testPlayerInventory(Player p){
 		int gold = 0;
 		for(ItemStack i : p.getInventory()){
 			if(i != null)
-				if(i.getType() != Material.GOLD_BLOCK){
-					if(!AllowedItems.contains(i.getTypeId())) return false;
-				}else{
+				if(i.getType() == Material.GOLD_BLOCK){
 					gold += i.getAmount();
+				}else{
+					if(!AllowedItems.contains(i.getTypeId())) return -1;
 				}
 		}
 		
 		if(gold >= plugin.config.getNeededGold()){
-			return true;
+			return 1;
 		}else{
-			return false;
+			return 0;
 		}
 	}
 	

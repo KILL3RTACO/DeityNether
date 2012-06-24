@@ -25,10 +25,14 @@ public class NetherCommand implements CommandExecutor{
 		if(sender instanceof Player){
 			p = (Player)sender;
 			if(args.length == 0){
-				porter.sendToNether(p);
+				//TODO what to do here?
 			}else if(args.length == 1){
 				if(args[0].equalsIgnoreCase("regen")){
 					testNetherRegen();
+				}else if(args[0].equalsIgnoreCase("join")){
+					porter.sendToNether(p);
+				}else if(args[0].equalsIgnoreCase("leave")){
+					porter.sendToOverworld(player);
 				}
 			}else{
 				
@@ -41,7 +45,12 @@ public class NetherCommand implements CommandExecutor{
 	
 	private void testNetherRegen(){
 		WorldManager manager = new WorldManager(plugin);
-		manager.generateNewNether();
+		if(manager.deleteWorld(plugin.config.getNetherWorldName())){
+//			manager.generateNewNether();
+		}else{
+			plugin.info("Could not delete world: " + plugin.config.getNetherWorldName());
+		}
+		
 	}
 
 	
