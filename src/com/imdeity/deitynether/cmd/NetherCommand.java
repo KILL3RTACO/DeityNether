@@ -32,7 +32,7 @@ public class NetherCommand implements CommandExecutor{
 				}else if(args[0].equalsIgnoreCase("join")){
 					porter.sendToNether(p);
 				}else if(args[0].equalsIgnoreCase("leave")){
-					porter.sendToOverworld(player);
+					porter.sendToOverworld(p);
 				}
 			}else{
 				
