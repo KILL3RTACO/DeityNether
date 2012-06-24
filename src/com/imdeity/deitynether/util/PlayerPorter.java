@@ -23,13 +23,13 @@ public class PlayerPorter {
 				//TODO test time left till next port
 				int result = testPlayerInventory(player);
 				if(result == 1){
-					player.getInventory().remove(new ItemStack(Material.GOLD_BLOCK, plugin.config.getNeededGold()));
+					player.getInventory().removeItem(new ItemStack(Material.GOLD_BLOCK, plugin.config.getNeededGold()));
 					player.sendMessage(DeityNether.HEADER + "§aTeleporting you to the nether...");
 					player.teleport(plugin.config.getNetherWorldSpawn());
-				}else if(result == 0){
-					player.sendMessage(DeityNether.HEADER + "§cYou have items in your inventory that are not allowed in the nether. Remove them and try again");
-				}else if(result == -1){
+				}else if(result == 0){ //not enough gold
 					player.sendMessage(DeityNether.HEADER + "§cYou do not have enough gold to go to the nether. Go get more.");
+				}else if(result == -1){ //Illegal items
+					player.sendMessage(DeityNether.HEADER + "§cYou have items in your inventory that are not allowed in the nether. Remove them and try again");
 				}
 			}
 		}else if(player.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
