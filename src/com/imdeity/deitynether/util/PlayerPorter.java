@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.imdeity.deitynether.DeityNether;
+import com.imdeity.deitynether.obj.DeityPlayer;
 
 public class PlayerPorter {
 
@@ -15,7 +16,8 @@ public class PlayerPorter {
 		plugin = instance;
 	}
 	
-	public void sendToNether(Player player){
+	public void sendToNether(Player p){
+		DeityPlayer player = new DeityPlayer(p);
 		if(player.hasPermission(DeityNether.GENERAL_PERMISSION)){
 			if(player.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
 				player.sendMessage(DeityNether.HEADER + "§cYou are already in the nether");
@@ -24,7 +26,7 @@ public class PlayerPorter {
 				int result = testPlayerInventory(player);
 				if(result == 1){
 					player.getInventory().removeItem(new ItemStack(Material.GOLD_BLOCK, plugin.config.getNeededGold()));
-					player.sendMessage(DeityNether.HEADER + "§aTeleporting you to the nether...");
+					player.sendInfoMessage("%aTeleporting you to the nether...");
 					player.teleport(plugin.config.getNetherWorldSpawn());
 				}else if(result == 0){ //not enough gold
 					player.sendMessage(DeityNether.HEADER + "§cYou do not have enough gold to go to the nether. Go get more.");
@@ -36,15 +38,16 @@ public class PlayerPorter {
 			player.sendMessage(DeityNether.HEADER + "§aTeleporting you to the nether...");
 			player.teleport(plugin.config.getNetherWorldSpawn());
 		}else{
-			player.sendMessage(DeityNether.HEADER + "§cYou don't have permission");
+			player.sendInvalidPermissionMessage();
 		}
 	}
 	
-	public void sendToOverworld(Player player){
+	public void sendToOverworld(Player p){
+		DeityPlayer player = new DeityPlayer(p);
 		if(player.getWorld() == plugin.getServer().getWorld(plugin.config.getMainWorldName())){
-			player.sendMessage(DeityNether.HEADER + "§cYou aren't in the nether");
+			player.sendErrorMessage("You aren't in the nether");
 		}else{
-			player.sendMessage(DeityNether.HEADER + "§aTeleporting you to the main world...");
+			player.sendInfoMessage("%aTeleporting you to the main world...");
 			player.teleport(plugin.config.getMainWorldSpawn());
 		}
 	}

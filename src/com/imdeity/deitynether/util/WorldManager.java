@@ -4,11 +4,11 @@ import java.io.File;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
 import com.imdeity.deitynether.DeityNether;
+import com.imdeity.deitynether.obj.DeityPlayer;
 
 public class WorldManager {
 
@@ -20,29 +20,30 @@ public class WorldManager {
 		newNether = new WorldCreator(plugin.config.getNetherWorldName());
 	}
 	
-	public void generateNewNether(){
-		unloadNether();
-		File file = new File(plugin.config.getNetherWorldName() + "/");
-		if(file.exists()){
-			
+	public void generateNewNether(Player player){
+		if(player.isOp()){
+			deleteWorld(plugin.config.getNetherWorldName());
+			//TODO regeneration code
+		}else{
 		}
-		newNether.environment(Environment.NETHER).generateStructures(true).seed(new java.util.Random().nextLong());
+		player.sendMessage(DeityNether.HEADER + "§cYou don't have permission");
 		
 	}
 	
 	public boolean deleteWorld(String worldName){
 		unloadNether();
-		return deleteFilesInFolder(new File(worldName));
+		return deleteFilesInFolder(new File(worldName + "/"));
 	}
 	
 	private void unloadNether(){
 		World nether = plugin.getServer().getWorld(plugin.config.getNetherWorldName());
 		Location ms = plugin.config.getMainWorldSpawn();
 		for(Player p : nether.getPlayers()){
-			p.sendMessage(DeityNether.HEADER + "Teleporting you to main world for Nether reset...");
-			p.teleport(ms);
+			DeityPlayer player = new DeityPlayer(p);
+			player.sendInfoMessage("Teleporting you to main world for Nether reset...");
+			player.teleport(ms);
 		}
-		plugin.getServer().unloadWorld(nether, false);
+//		plugin.getServer().unloadWorld(nether, false);
 	}
 	
 	private boolean deleteFilesInFolder(File folder){

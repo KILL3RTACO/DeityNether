@@ -11,11 +11,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.imdeity.deitynether.cmd.NetherCommand;
 import com.imdeity.deitynether.listener.NetherWatcher;
 import com.imdeity.deitynether.sql.NetherSQL;
+import com.imdeity.deitynether.util.WorldManager;
 
 public class DeityNether extends JavaPlugin{
 
 	private File configFile = new File("plugins/DeityNether/config.yml"); //No need for File.pathSeparator, as '/' works with any OS
 	public Config config = new Config(configFile);
+	public WorldManager wm = new WorldManager(this);
+	private NetherWatcher watcher = new NetherWatcher(this);
 	public static  NetherSQL mysql = null;
 	public static boolean hasError = false;
 	public static final String HEADER = "§7[§c*ImDeity*§7]§f ";
@@ -37,7 +40,9 @@ public class DeityNether extends JavaPlugin{
 			info("MySQL setup incorrectly, check the config.yml");
 		}
 		if(!hasError){
-			getServer().getPluginManager().registerEvents(new NetherWatcher(this), this);
+			getServer().getPluginManager().registerEvents(watcher, this);
+			getServer().getScheduler().scheduleSyncRepeatingTask(this, watcher, 60L, 1200L);
+			checkNetherDeletionStatus();
 		}
 		info("Loading config...");
 		config.loadDefaults();
@@ -53,6 +58,18 @@ public class DeityNether extends JavaPlugin{
 			createDirs(configFile);
 		}catch(IOException e){
 			e.printStackTrace();
+		}
+	}
+	
+	public void broadcastMessage(String message){
+		getServer().broadcastMessage(message);
+	}
+	
+	private void checkNetherDeletionStatus(){
+		//TODO check MySQL if world needs to be reset, set 'needsDeleting' as result
+		boolean needsDeleting = false;
+		if(needsDeleting){
+			wm.deleteWorld(config.getNetherWorldName());
 		}
 	}
 	
