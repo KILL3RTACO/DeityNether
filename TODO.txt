@@ -26,13 +26,15 @@ that we can change later.
 TODO
 =======
 	
-- MySQL
-- World Deletion/Generation
+- MySQL:
+  *Check server if nether needs to be reset
+  *Player values, such as how long they have been in the nether
 
 What's been added
 ==================
 
 - MySQL connection
+- WorldDeletion? (needs to be tested, deletion would also mean generation would be added)
 - Permissions: DeityNether.GENERAL_PERMISSION (Deity.nether.general), DeityNether.OVERRIDE_PERMISSION (Deity.nether.override)
 - Inventory checking/removal og GOLD_BLOCKs as 'payment'
 - Teleportation to Nether/Overworld (main world)
