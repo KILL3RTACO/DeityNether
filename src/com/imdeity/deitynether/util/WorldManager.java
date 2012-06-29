@@ -2,6 +2,7 @@ package com.imdeity.deitynether.util;
 
 import java.io.File;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
@@ -36,10 +37,10 @@ public class WorldManager {
 	
 	private void unloadNether(){
 		World nether = plugin.getServer().getWorld(plugin.config.getNetherWorldName());
-		World main = plugin.getServer().getWorld(plugin.config.getMainWorldName());
+		Location ms = plugin.config.getMainWorldSpawn();
 		for(Player p : nether.getPlayers()){
 			p.sendMessage(DeityNether.HEADER + "Teleporting you to main world for Nether reset...");
-			p.teleport(main.getSpawnLocation());
+			p.teleport(ms);
 		}
 		plugin.getServer().unloadWorld(nether, false);
 	}
