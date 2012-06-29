@@ -13,5 +13,6 @@ An enum is used that stores all values of items that can be brought into the net
 Each item is organized into three groups: Food, Armour, and Tools. This is purely cosmetic and has no effect on the plugin whatsoever.
 
 A note about DeityPlayer:
-   Yes, there is a lot of code in there that is implemented from the 'Player' interface. Using Eclipse's handy little 'add all unimplemented methods' tool, i did just that and just only the ones that are needed, so to save time.
+   Yes, there is a lot of code in there that is implemented from the 'Player' interface. Using Eclipse's handy little 'add all unimplemented methods' tool, i did just that and 
+   edited only the methods that are needed (eg. getInventory() or sendMessage()), to save time.
    So you may see some methods say 'return null' or 'return 0'
