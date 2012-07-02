@@ -3,9 +3,13 @@ package com.imdeity.deitynether.sql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.bukkit.entity.Player;
+
 import com.imdeity.deitynether.DeityNether;
+import com.imdeity.deitynether.obj.DeityPlayer;
 
 public class NetherSQL {
 
@@ -23,37 +27,100 @@ public class NetherSQL {
 		usr = plugin.config.getMySqlDatabaseUsername();
 		pass = plugin.config.getMySqlDatabasePassword();
 		connect();
-//		createTables();
+		createTables();
 	}
 	
 	public void connect() throws SQLException{
 			conn = DriverManager.getConnection("jdbc:mysql://" + address+ ":" + port + "/" + db, usr, pass);
 	}
 	
-	public void createTables(){
-		String sql = "CREATE TABLE IF NOT EXISTS `nether-players` ( `player` VARCHAR(16) NOT NULL `time` TIMSTAMP NOT NULL DEFAULT CURRENT TIMESTAMP) ";
+	public void createTables() throws SQLException{
+		String sql = "CREATE TABLE IF NOT EXISTS `nether-actions` (`id` INT(16) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
+				" `player` VARCHAR(16) NOT NULL, `action` VARCHAR(5) NOT NULL, `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)" +
+				" ENGINE = MYISAM COMMENT = 'Nether action log for records of player joins/leaves'";
+		statement(sql);
+		sql = "CREATE TABLE IF NOT EXISTS `nether-stats` (`id` INT(16) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+				"`player` VARCHAR(16) NOT NULL, `duration` INT (2) DEFAULT '0', UNIQUE(`player`))" +
+				" ENGINE = MYISAM COMMENT = 'Current time in nether record for players'";
+		statement(sql);
 	}
 	
 	public void ensureConnection(){
 		try {
-			if(conn == null || !conn.isValid(5)){
+			if(conn == null || !conn.isValid(5))
 				connect();
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	
-	public void addPlayerToTable(String playerName){
+	public void setJoinTime(Player p){
 		try {
-			String sql = "INSERT INTO `nether-players` (`player`) VALUES(" + playerName + ")";
+			String name = p.getName();
+			String sql = "SELECT * FROM `nether-actions` WHERE `player`='" + name + "'";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
+			if(!rs.next()){ //Row doesn't exist
+				sql = "INSERT INTO `nether-actions` (`player`, `action`) VALUES ('" + name + "' , 'join')";
+				statement(sql);
+				sql = "INSERT INTO `nether-stats` (`player`) VALUES ('" + name + "')";
+				statement(sql);
+			}else{ //Row exists
+				sql = "UPDATE `nether-actions` SET `action`='join', `time`=NOW() WHERE `player`='" + name + "'" ;
+				statement(sql);
+				sql = "UPDATE `nether-stats` SET (`duration`) VALUES ('0')";
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void getJoinTime(Player p){
+		String name = p.getName();
+		try {
+			String sql = "SELECT FROM `nether-actions` WHERE `player`='" + name + "' AND `action`='join'";
+			statement(sql);
+		} catch (SQLException e){
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean testWaitTime() throws SQLException{
+		String sql = "";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();
+		return false;
+		
+	}
+	
+	public void setLeaveTime(){
+		try {
+			String sql = "UPDATE `nether-actions` SET (`action`, `time`) VALUES ('leave', NOW())";
 			statement(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	public void statement(String sql) throws SQLException{
+	
+	public void addTime(DeityPlayer player){
+		try {
+			int duration = player.getTimeInNether();
+			String sql = "UPDATE `nether-stats` SET `duration`='" + (duration + 1) + "' WHERE `player`='" + player.getName() +"'";
+			statement(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public ResultSet getResultSet(String sql) throws SQLException{
+		ensureConnection();
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		return stmt.executeQuery();
+	}
+	
+	private void statement(String sql) throws SQLException{
 		ensureConnection();
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.executeUpdate();

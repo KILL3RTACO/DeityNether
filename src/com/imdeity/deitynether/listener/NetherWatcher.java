@@ -1,5 +1,8 @@
 package com.imdeity.deitynether.listener;
 
+import java.sql.Timestamp;
+import java.util.HashMap;
+
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Entity;
@@ -11,8 +14,9 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.imdeity.deitynether.DeityNether;
+import com.imdeity.deitynether.obj.DeityPlayer;
 
-public class NetherWatcher implements Listener{
+public class NetherWatcher implements Listener, Runnable{
 
 	private DeityNether plugin = null;
 	
@@ -36,6 +40,23 @@ public class NetherWatcher implements Listener{
 		}else if(entity instanceof Player){
 			//TODO set MySql so they can't come back
 		}
+	}
+
+	@Override
+	public void run() {
+//		for(Player p : playerJoins.keySet()){
+//			playerDurations.put(p, playerDurations.get(p) + 1); //adds one minute to their duration
+//			
+//		}
+		for(Player p : plugin.getServer().getWorld(plugin.config.getNetherWorldName()).getPlayers()){
+			DeityPlayer player = new DeityPlayer(p, plugin);
+			plugin.mysql.addTime(player);
+			if(player.getTimeInNether() == 3600){
+				player.sendThanksMessage();
+				player.teleport(plugin.config.getMainWorldSpawn());
+			}
+		}
+		//Check players
 	}
 	
 //	@EventHandler

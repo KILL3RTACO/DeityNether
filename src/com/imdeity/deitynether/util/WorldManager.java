@@ -19,7 +19,7 @@ public class WorldManager {
 	
 	@Deprecated
 	public void generateNewNether(Player p){
-		DeityPlayer player = new DeityPlayer(p);
+		DeityPlayer player = new DeityPlayer(p, plugin);
 		if(player.isOp()){
 			deleteWorld(plugin.config.getNetherWorldName());
 			//TODO regeneration code
@@ -30,20 +30,34 @@ public class WorldManager {
 	}
 	
 	public boolean deleteWorld(String worldName){
-		unloadNether();
 		return deleteFilesInFolder(new File(worldName + "/"));
 	}
 	
-	private void unloadNether(){
-		World nether = plugin.getServer().getWorld(plugin.config.getNetherWorldName());
-		Location ms = plugin.config.getMainWorldSpawn();
-		for(Player p : nether.getPlayers()){
-			DeityPlayer player = new DeityPlayer(p);
-			player.sendInfoMessage("Teleporting you to main world for Nether reset...");
-			player.teleport(ms);
-		}
-//		plugin.getServer().unloadWorld(nether, false);
+	public boolean getNetherRegenStatus(){
+		//TODO return MySQL table value denoting the RegenStatus 
+		return false;
 	}
+	
+	public void setNetherRegenStatus(Player p, boolean status){
+		DeityPlayer admin = new DeityPlayer(p, plugin);
+		if(admin.isOp()){
+			//TODO MySQL code to set table value denoting the RegenStatus
+			admin.sendInfoMessage("%dNether reset status set to: %b" + status);
+		}else{
+			admin.sendInvalidPermissionMessage();
+		}
+	}
+	
+//	private void unloadNether(){
+//		World nether = plugin.getServer().getWorld(plugin.config.getNetherWorldName());
+//		Location ms = plugin.config.getMainWorldSpawn();
+//		for(Player p : nether.getPlayers()){
+//			DeityPlayer player = new DeityPlayer(p);
+//			player.sendInfoMessage("Teleporting you to main world for Nether reset...");
+//			player.teleport(ms);
+//		}
+////		plugin.getServer().unloadWorld(nether, false);
+//	}
 	
 	private boolean deleteFilesInFolder(File folder){
 		for(File f : folder.listFiles()){

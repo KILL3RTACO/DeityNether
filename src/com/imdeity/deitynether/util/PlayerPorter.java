@@ -17,7 +17,7 @@ public class PlayerPorter {
 	}
 	
 	public void sendToNether(Player p){
-		DeityPlayer player = new DeityPlayer(p);
+		DeityPlayer player = new DeityPlayer(p, plugin);
 		if(player.hasPermission(DeityNether.GENERAL_PERMISSION)){
 			if(player.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
 				player.sendMessage(DeityNether.HEADER + "§cYou are already in the nether");
@@ -25,9 +25,13 @@ public class PlayerPorter {
 				//TODO test time left till next port
 				int result = testPlayerInventory(player);
 				if(result == 1){
+					//TODO add MySQL checker, if not waited long enough, tell them how much time they need to wait
+					//TODO else, add them to table
+					//done by getting last time left the nether, last result in result set
 					player.getInventory().removeItem(new ItemStack(Material.GOLD_BLOCK, plugin.config.getNeededGold()));
 					player.sendInfoMessage("%aTeleporting you to the nether...");
 					player.teleport(plugin.config.getNetherWorldSpawn());
+					plugin.mysql.setJoinTime(player);
 				}else if(result == 0){ //not enough gold
 					player.sendMessage(DeityNether.HEADER + "§cYou do not have enough gold to go to the nether. Go get more.");
 				}else if(result == -1){ //Illegal items
@@ -43,12 +47,13 @@ public class PlayerPorter {
 	}
 	
 	public void sendToOverworld(Player p){
-		DeityPlayer player = new DeityPlayer(p);
+		DeityPlayer player = new DeityPlayer(p, plugin);
 		if(player.getWorld() == plugin.getServer().getWorld(plugin.config.getMainWorldName())){
 			player.sendErrorMessage("You aren't in the nether");
 		}else{
 			player.sendInfoMessage("%aTeleporting you to the main world...");
 			player.teleport(plugin.config.getMainWorldSpawn());
+			//TODO remove from table
 		}
 	}
 	

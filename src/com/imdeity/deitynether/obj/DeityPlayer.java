@@ -1,6 +1,8 @@
 package com.imdeity.deitynether.obj;
 
 import java.net.InetSocketAddress;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -46,15 +48,32 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import com.imdeity.deitynether.DeityNether;
 import com.imdeity.deitynether.util.ChatUtils;
 
 public class DeityPlayer implements Player{
 
 	private Player p = null;
 	private ChatUtils cu = new ChatUtils();
+	private DeityNether plugin = null;
 	
-	public DeityPlayer(Player player){
+	public DeityPlayer(Player player, DeityNether instance){
 		p = player;
+		plugin = instance;
+	}
+	
+	public int getTimeInNether(){
+		try {
+		String name = getName();
+		String sql = "SELECT `duration` FROM `nether-stats` WHERE `player`='" + name + "'";
+		ResultSet rs;
+			rs = plugin.mysql.getResultSet(sql);
+			rs.next();
+			return rs.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
 	
 	public void sendErrorMessage(String message){
@@ -68,6 +87,29 @@ public class DeityPlayer implements Player{
 	public void sendInvalidPermissionMessage(){
 		sendErrorMessage("You don't have permission");
 	}
+	
+	public void sendPluginHelp(){
+		sendMessage(cu.format("%3-----[%bDeityNether Help%3]-----", false));
+		sendMessage(cu.format("/nether [join | leave] - Join or leave the nether", false));
+		sendMessage(cu.format("/nether time - See how much time you have left", false));
+		if(isOp())
+			sendMessage(cu.format("/nether regen [on | off] - Set the regeneration status for the nether world", false));
+		sendMessage(cu.format("/nether info - Plugin information", false));
+	}
+	
+	public void sendPluginInformation(){
+		sendMessage(cu.format("%3-----[%bDeityNether Information%3]-----", false));
+		sendMessage(cu.format("%3#%0-%3##%0-", false));
+		sendMessage(cu.format("%0--%b#%0--%b#     %3Developed by: %bKILL3RTACO", false));
+		sendMessage(cu.format("%3#%0-%b#%0--%b#", false));
+		sendMessage(cu.format("%3#%0-%b#%0--%b#", false));
+		sendMessage(cu.format("%3#%0-%b###%0-", false));
+	}
+	
+	public void sendThanksMessage(){
+		sendMessage(cu.format("%3Thank you for visiting the nether, you may return in %b24 hours", true));
+	}
+//----------------------------------------------------------------------------------
 	
 	@Override
 	public void closeInventory() {
@@ -100,8 +142,7 @@ public class DeityPlayer implements Player{
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return p.getName();
 	}
 
 	@Override
