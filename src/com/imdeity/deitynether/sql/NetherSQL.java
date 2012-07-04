@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import org.bukkit.entity.Player;
 
 import com.imdeity.deitynether.DeityNether;
+import com.imdeity.deitynether.obj.DeityOfflinePlayer;
 import com.imdeity.deitynether.obj.DeityPlayer;
 
 public class NetherSQL {
@@ -43,6 +44,10 @@ public class NetherSQL {
 				"`player` VARCHAR(16) NOT NULL, `duration` INT (2) DEFAULT '0', UNIQUE(`player`))" +
 				" ENGINE = MYISAM COMMENT = 'Current time in nether record for players'";
 		statement(sql);
+		sql = "CREATE TABLE IF NOT EXISTS `nether-wait-times` (`id` INT(16) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
+				" `player` VARCHAR(16) NOT NULL, `duration` INT(5) DEFAULT '0', UNIQUE(`player`))" +
+				"ENGINE = MYISAM COMMENT = 'Log for how long a player has waited to go to the nether'";
+		statement(sql);
 	}
 	
 	public void ensureConnection(){
@@ -66,10 +71,15 @@ public class NetherSQL {
 				statement(sql);
 				sql = "INSERT INTO `nether-stats` (`player`) VALUES ('" + name + "')";
 				statement(sql);
+				sql = "INSERT INTO `nether-wait-times` (`player`) VALUES ('" + name + "')";
+				statement(sql);
 			}else{ //Row exists
 				sql = "UPDATE `nether-actions` SET `action`='join', `time`=NOW() WHERE `player`='" + name + "'" ;
 				statement(sql);
-				sql = "UPDATE `nether-stats` SET (`duration`) VALUES ('0')";
+				sql = "UPDATE `nether-stats` SET `duration`='0'";
+				statement(sql);
+				sql = "UPDATE `nether-wait-times` SET `duration`='0'";
+				statement(sql);
 			}
 
 		} catch (SQLException e) {
@@ -77,27 +87,9 @@ public class NetherSQL {
 		}
 	}
 	
-	public void getJoinTime(Player p){
-		String name = p.getName();
+	public void setLeaveTime(Player player){
 		try {
-			String sql = "SELECT FROM `nether-actions` WHERE `player`='" + name + "' AND `action`='join'";
-			statement(sql);
-		} catch (SQLException e){
-			e.printStackTrace();
-		}
-	}
-	
-	public boolean testWaitTime() throws SQLException{
-		String sql = "";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		ResultSet rs = stmt.executeQuery();
-		return false;
-		
-	}
-	
-	public void setLeaveTime(){
-		try {
-			String sql = "UPDATE `nether-actions` SET (`action`, `time`) VALUES ('leave', NOW())";
+			String sql = "UPDATE `nether-actions` SET `action`='leave', `time`=NOW() WHERE `player`='" + player.getName() + "'";
 			statement(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -108,6 +100,26 @@ public class NetherSQL {
 		try {
 			int duration = player.getTimeInNether();
 			String sql = "UPDATE `nether-stats` SET `duration`='" + (duration + 1) + "' WHERE `player`='" + player.getName() +"'";
+			statement(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void addWaitTime(DeityPlayer player){
+		try {
+			int duration = player.getTimeWaited();
+			String sql = "UPDATE `nether-wait-times` SET `duration`='" + (duration + 1) + "' WHERE `player`='" + player.getName() + "'";
+			statement(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void addWaitTime(DeityOfflinePlayer player){
+		try {
+			int duration = player.getTimeWaited();
+			String sql = "UPDATE `nether-wait-times` SET `duration`='" + (duration + 1) + "' WHERE `player`='" + player.getName() + "'";
 			statement(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();

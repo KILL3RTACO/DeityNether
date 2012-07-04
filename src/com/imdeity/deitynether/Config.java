@@ -21,6 +21,8 @@ public class Config{
 	public void loadDefaults(){
 		if(!config.contains("world.nether.days-until-next-regen"))			//World options
 			config.set("world.nether.days-until-next-regen", 7);
+		if(!config.contains("world.nether.wait-time-in-hours"))
+			config.set("world.nether.wait-time-in-hours", 12);
 		if(!config.contains("world.nether.name"))
 			config.set("world.nether.name", "world_nether");
 		if(!config.contains("world.nether.pigman-gold-drop-chance"))
@@ -112,6 +114,10 @@ public class Config{
 		int z = getInt("spawn.nether.z");
 		World world = Bukkit.getServer().getWorld(getNetherWorldName());
 		return new Location(world, x, y, z);
+	}
+	
+	public int getWaitTime(){
+		return getInt("world.nether.wait-time-in-hours") * 3600;
 	}
 	
 	public String getNetherWorldName(){

@@ -2,8 +2,6 @@ package com.imdeity.deitynether.util;
 
 import java.io.File;
 
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.imdeity.deitynether.DeityNether;

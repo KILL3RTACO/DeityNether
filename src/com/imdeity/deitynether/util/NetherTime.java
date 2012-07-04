@@ -8,9 +8,11 @@ import com.imdeity.deitynether.obj.DeityPlayer;
 public class NetherTime {
 
 	private DeityNether plugin = null;
+	public int neededWaitTime;
 	
 	public NetherTime(DeityNether instance){
 		plugin = instance;
+		neededWaitTime = plugin.config.getWaitTime();
 	}
 	
 	public void getTimeLeft(Player p){
@@ -23,6 +25,14 @@ public class NetherTime {
 		}else if(player.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
 			player.sendInfoMessage("You have unlimited time in the nether");
 		}
+	}
+	
+	public String getWaitTimeLeft(DeityPlayer player){
+		int needToWait = neededWaitTime - player.getTimeWaited();
+		int hours = needToWait / 3600;
+		int minutes = (needToWait % 3600) / 60;
+		int secs = (needToWait % 3600) % 60;
+		return "%6" + hours + " hours " + minutes + " minutes and " + secs + " seconds"; 
 	}
 	
 	private String formatTime(int mins, int secs){

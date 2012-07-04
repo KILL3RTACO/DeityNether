@@ -1,9 +1,7 @@
 package com.imdeity.deitynether.listener;
 
-import java.sql.Timestamp;
-import java.util.HashMap;
-
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.PigZombie;
@@ -14,14 +12,18 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.imdeity.deitynether.DeityNether;
+import com.imdeity.deitynether.obj.DeityOfflinePlayer;
 import com.imdeity.deitynether.obj.DeityPlayer;
+import com.imdeity.deitynether.util.NetherTime;
 
 public class NetherWatcher implements Listener, Runnable{
 
 	private DeityNether plugin = null;
+	private NetherTime nt = null;
 	
 	public NetherWatcher(DeityNether instance){
 		plugin = instance;
+		nt = new NetherTime(plugin);
 	}
 	
 	@EventHandler
@@ -35,28 +37,38 @@ public class NetherWatcher implements Listener, Runnable{
 			int rn = (int)Math.random() * ((100 - chance) + 1) + chance;
 			if(rn < chance){
 				event.getDrops().add(drop);
-//				plugin.getServer().getWorld(plugin.config.getNetherWorldName()).dropItem(entity.getLocation(), drop);
 			}
 		}else if(entity instanceof Player){
-			//TODO set MySql so they can't come back
+			plugin.mysql.setLeaveTime((Player)event.getEntity());
 		}
 	}
 
 	@Override
 	public void run() {
-//		for(Player p : playerJoins.keySet()){
-//			playerDurations.put(p, playerDurations.get(p) + 1); //adds one minute to their duration
-//			
-//		}
-		for(Player p : plugin.getServer().getWorld(plugin.config.getNetherWorldName()).getPlayers()){
+		for(Player p : plugin.getServer().getOnlinePlayers()){
 			DeityPlayer player = new DeityPlayer(p, plugin);
-			plugin.mysql.addTime(player);
-			if(player.getTimeInNether() == 3600){
-				player.sendThanksMessage();
-				player.teleport(plugin.config.getMainWorldSpawn());
+			if(p.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
+				plugin.mysql.addTime(player);
+				checkPlayer(player);
+			}else{
+				if(player.getTimeWaited() != nt.neededWaitTime)
+					plugin.mysql.addWaitTime(player);
 			}
 		}
-		//Check players
+		for(OfflinePlayer p : plugin.getServer().getOfflinePlayers()){
+			DeityOfflinePlayer player = new DeityOfflinePlayer(p, plugin);
+			if(player.hasEnteredNether()) //OfflinePlayer has entered the nether before, they need to wait to enter again
+				if(!player.isInNether()) //OfflinePlayer is currently NOT in the nether
+					plugin.mysql.addWaitTime(player);
+				
+		}
+	}
+	
+	private void checkPlayer(DeityPlayer player){
+		if(player.getTimeInNether() == 3600){
+			player.sendThanksMessage();
+			player.teleport(plugin.config.getMainWorldSpawn());
+		}
 	}
 	
 //	@EventHandler
