@@ -25,11 +25,8 @@ that we can change later.
 
 TODO
 =======
-	
-- MySQL:
-  *Check server if nether needs to be reset
-  *Player values:
-    *How long they need to wait to enter nether again (for OfflinePlayers, counter works with any online player)
+
+Finished? - doing bug testing
 
 What's been added
 ==================
@@ -37,6 +34,7 @@ What's been added
 - MySQL:
   *Player actions, such as leave and joining
   *Counters, such as how long a player has been in the nether and how long they need to wait before joining again
+  *Value tne stores whether the nether needs to be reset can be overriden with /nether regen [on|off]
 - WorldDeletion
 - Permissions: DeityNether.GENERAL_PERMISSION (Deity.nether.general), DeityNether.OVERRIDE_PERMISSION (Deity.nether.override)
 - Inventory checking/removal og GOLD_BLOCKs as 'payment'
