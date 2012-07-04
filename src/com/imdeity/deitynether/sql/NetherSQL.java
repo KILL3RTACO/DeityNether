@@ -1,5 +1,7 @@
 package com.imdeity.deitynether.sql;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -29,6 +31,7 @@ public class NetherSQL {
 		pass = plugin.config.getMySqlDatabasePassword();
 		connect();
 		createTables();
+		setDefaultResetStatus();
 	}
 	
 	public void connect() throws SQLException{
@@ -48,6 +51,10 @@ public class NetherSQL {
 				" `player` VARCHAR(16) NOT NULL, `duration` INT(5) DEFAULT '0', UNIQUE(`player`))" +
 				"ENGINE = MYISAM COMMENT = 'Log for how long a player has waited to go to the nether'";
 		statement(sql);
+		sql= "CREATE TABLE IF NOT EXISTS `nether-reset-log` (`id` INT (1) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
+				" `last-reset` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `needs-reset` INT(1) NOT NULL DEFAULT '0')" +
+				" ENGINE = MYISAM COMMENT = 'Log for when the nether was last reset and if it needs resetting'";
+		statement(sql);
 	}
 	
 	public void ensureConnection(){
@@ -59,6 +66,18 @@ public class NetherSQL {
 		}
 	}
 	
+	private void setDefaultResetStatus(){
+		try {
+			String sql = "SELECT * FROM `nether-reset-log` WHERE `id`='1'";
+			ResultSet rs = getResultSet(sql);
+			if(!rs.next()){
+				sql = "INSERT INTO `nether-reset-log` (`last-reset`, `needs-reset`) VALUES (NOW(), '0')";
+				statement(sql);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void setJoinTime(Player p){
 		try {
@@ -96,6 +115,33 @@ public class NetherSQL {
 		}
 	}
 	
+	public boolean getResetStatus(){
+		try {
+			String sql = "SELECT `needs-reset` FROM `nether-reset-log` WHERE `id`='1'";
+			ResultSet rs = getResultSet(sql);
+			rs.next();
+			if(rs.getInt(1) == 0)
+				return false;
+			else return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public void overrideResetStatus(boolean status){ // 0 = false, 1 = true
+		try {
+			String sql;
+			if(status)
+				sql = "UPDATE `nether-reset-log` SET `needs-reset`='1' WHERE `id`='1'";
+			else
+				sql = "UPDATE `nether-reset-log` SET `needs-reset`='0' WHERE `id`='1'";
+			statement(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void addTime(DeityPlayer player){
 		try {
 			int duration = player.getTimeInNether();
@@ -121,6 +167,23 @@ public class NetherSQL {
 			int duration = player.getTimeWaited();
 			String sql = "UPDATE `nether-wait-times` SET `duration`='" + (duration + 1) + "' WHERE `player`='" + player.getName() + "'";
 			statement(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void checkResetStatus(){
+		int days = plugin.config.getRegenerationInterval();
+		try {
+			String sql = "SELECT `last-reset` FROM `nether-reset-log` WHERE `id`='1'";
+			ResultSet rs = getResultSet(sql);
+			rs.next();
+			Timestamp reset = rs.getTimestamp(1);
+			reset.setTime(reset.getTime() + (days * 24 * 60 * 60 * 1000));
+			Timestamp now = new Timestamp(System.currentTimeMillis());
+			if(now.equals(reset) || now.after(reset)){
+				overrideResetStatus(true);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

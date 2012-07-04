@@ -19,8 +19,8 @@ public class Config{
 	}
 	
 	public void loadDefaults(){
-		if(!config.contains("world.nether.days-until-next-regen"))			//World options
-			config.set("world.nether.days-until-next-regen", 7);
+		if(!config.contains("world.regneration-interval-in-days"))			//World options
+			config.set("world.nether.regeneration-interval-in-days", 7);
 		if(!config.contains("world.nether.wait-time-in-hours"))
 			config.set("world.nether.wait-time-in-hours", 12);
 		if(!config.contains("world.nether.name"))
@@ -64,8 +64,8 @@ public class Config{
 		}
 	}
 	
-	public int getDaysUntilNextRegen(){
-		return getInt("world.nether.days-until-next-regen");
+	public int getRegenerationInterval(){
+		return getInt("world.nether.regeneration-interval-in-days");
 	}
 	
 	public int getDropChance(){

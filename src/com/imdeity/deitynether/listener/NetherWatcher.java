@@ -9,21 +9,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.imdeity.deitynether.DeityNether;
 import com.imdeity.deitynether.obj.DeityOfflinePlayer;
 import com.imdeity.deitynether.obj.DeityPlayer;
 import com.imdeity.deitynether.util.NetherTime;
+import com.imdeity.deitynether.util.PlayerPorter;
 
 public class NetherWatcher implements Listener, Runnable{
 
 	private DeityNether plugin = null;
 	private NetherTime nt = null;
+	private PlayerPorter porter = null;
 	
 	public NetherWatcher(DeityNether instance){
 		plugin = instance;
 		nt = new NetherTime(plugin);
+		porter = new PlayerPorter(plugin);
 	}
 	
 	@EventHandler
@@ -42,6 +46,13 @@ public class NetherWatcher implements Listener, Runnable{
 			plugin.mysql.setLeaveTime((Player)event.getEntity());
 		}
 	}
+	
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event){
+		Player player = event.getPlayer();
+		if(player.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName()))
+			porter.sendToOverworld(player);
+	}
 
 	@Override
 	public void run() {
@@ -55,26 +66,22 @@ public class NetherWatcher implements Listener, Runnable{
 					plugin.mysql.addWaitTime(player);
 			}
 		}
+		
 		for(OfflinePlayer p : plugin.getServer().getOfflinePlayers()){
 			DeityOfflinePlayer player = new DeityOfflinePlayer(p, plugin);
 			if(player.hasEnteredNether()) //OfflinePlayer has entered the nether before, they need to wait to enter again
 				if(!player.isInNether()) //OfflinePlayer is currently NOT in the nether
 					plugin.mysql.addWaitTime(player);
-				
 		}
+		
+		plugin.mysql.checkResetStatus();
 	}
 	
 	private void checkPlayer(DeityPlayer player){
-		if(player.getTimeInNether() == 3600){
-			player.sendThanksMessage();
+		if(player.getTimeInNether() == 3600){			//Their is up
+			player.sendThanksMessage();					//"Thank you for entering the nether you may again in <config-value> hours
 			player.teleport(plugin.config.getMainWorldSpawn());
 		}
 	}
-	
-//	@EventHandler
-//	public void onItemSpawn(ItemSpawnEvent event){
-//		if(event.getEntityType() == EntityType.PIG_ZOMBIE)
-//			event.setCancelled(true);
-//	}
 	
 }

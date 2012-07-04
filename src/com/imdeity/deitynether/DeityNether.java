@@ -3,9 +3,9 @@ package com.imdeity.deitynether;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.logging.Logger;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,14 +27,8 @@ public class DeityNether extends JavaPlugin{
 	public static final String HEADER = "§7[§c*ImDeity*§7]§f ";
 	public static final String GENERAL_PERMISSION = "Deity.nether.general";
 	public static final String OVERRIDE_PERMISSION = "Deity.nether.override";
-	private boolean needsDeleting = true;
 	
 	public void onDisable(){
-		if(needsDeleting){
-			for(Player p : getServer().getWorld(config.getMainWorldName()).getPlayers()){
-				
-			}
-		}
 		info("Disabled");
 	}
 	
@@ -42,6 +36,8 @@ public class DeityNether extends JavaPlugin{
 		CommandExecutor executor = new NetherCommand(this);
 		addDataFolders();
 		getCommand("nether").setExecutor(executor);
+		info("Loading config...");
+		config.loadDefaults();
 		try {
 			setup();
 			info("Connected!");
@@ -53,8 +49,6 @@ public class DeityNether extends JavaPlugin{
 			getServer().getScheduler().scheduleSyncRepeatingTask(this, watcher, 0L, 20L); //No delay, repeats every 20 ticks (1 second)
 			checkNetherDeletionStatus();
 		}
-		info("Loading config...");
-		config.loadDefaults();
 		info("Enabled");
 	}
 	
@@ -83,7 +77,7 @@ public class DeityNether extends JavaPlugin{
 	}
 	
 	private void checkNetherDeletionStatus(){
-		//TODO check MySQL if world needs to be reset, set 'needsDeleting' as result
+		boolean needsDeleting = mysql.getResetStatus();
 		if(needsDeleting){
 			wm.deleteWorld(config.getNetherWorldName());
 		}

@@ -39,7 +39,7 @@ public class WorldManager {
 	public void setNetherRegenStatus(Player p, boolean status){
 		DeityPlayer admin = new DeityPlayer(p, plugin);
 		if(admin.isOp()){
-			//TODO MySQL code to set table value denoting the RegenStatus
+			plugin.mysql.overrideResetStatus(status);
 			admin.sendInfoMessage("%dNether reset status set to: %b" + status);
 		}else{
 			admin.sendInvalidPermissionMessage();
