@@ -32,17 +32,17 @@ public class Config{
 		if(!config.contains("world.main.name"))
 			config.set("world.main.name", "world");
 		if(!config.contains("spawn.main-world.x"))							//World spawn options
-			config.set("spawn.main.x", 100);
+			config.set("spawn.main.x", 0);
 		if(!config.contains("spawn.main.y"))
 			config.set("spawn.main.y", 64);
 		if(!config.contains("spawn.main.z"))
-			config.set("spawn.main.z", 100);
+			config.set("spawn.main.z", 0);
 		if(!config.contains("spawn.nether.x"))
-			config.set("spawn.nether.x", 100);
+			config.set("spawn.nether.x", 0);
 		if(!config.contains("spawn.nether.y"))
 			config.set("spawn.nether.y", 64);
 		if(!config.contains("spawn.nether.z"))
-			config.set("spawn.nether.z", 100);
+			config.set("spawn.nether.z", 0);
 		if(!config.contains("mysql.database.name"))							//MySQL options
 			config.set("mysql.database.name", "kingdoms");
 		if(!config.contains("mysql.database.username"))
