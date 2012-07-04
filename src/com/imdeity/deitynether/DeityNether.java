@@ -68,18 +68,11 @@ public class DeityNether extends JavaPlugin{
 		getServer().broadcastMessage(message);
 	}
 	
-	public void updateDeleteStatus(boolean status){
-		if(status){
-			
-		}else{
-			
-		}
-	}
-	
 	private void checkNetherDeletionStatus(){
 		boolean needsDeleting = mysql.getResetStatus();
 		if(needsDeleting){
 			wm.deleteWorld(config.getNetherWorldName());
+			mysql.setResetTime();
 		}
 	}
 	

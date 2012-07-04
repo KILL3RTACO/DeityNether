@@ -46,17 +46,6 @@ public class WorldManager {
 		}
 	}
 	
-//	private void unloadNether(){
-//		World nether = plugin.getServer().getWorld(plugin.config.getNetherWorldName());
-//		Location ms = plugin.config.getMainWorldSpawn();
-//		for(Player p : nether.getPlayers()){
-//			DeityPlayer player = new DeityPlayer(p);
-//			player.sendInfoMessage("Teleporting you to main world for Nether reset...");
-//			player.teleport(ms);
-//		}
-////		plugin.getServer().unloadWorld(nether, false);
-//	}
-	
 	private boolean deleteFilesInFolder(File folder){
 		for(File f : folder.listFiles()){
 			if(f.isFile()){

@@ -1,6 +1,5 @@
 package com.imdeity.deitynether.sql;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -109,6 +108,15 @@ public class NetherSQL {
 	public void setLeaveTime(Player player){
 		try {
 			String sql = "UPDATE `nether-actions` SET `action`='leave', `time`=NOW() WHERE `player`='" + player.getName() + "'";
+			statement(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setResetTime(){
+		try {
+			String sql = "UPDATE `nether-reset-log` SET `last-reset`=NOW() WHERE `id`='1'";
 			statement(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -1,5 +1,8 @@
 package com.imdeity.deitynether.util;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.bukkit.entity.Player;
 
 import com.imdeity.deitynether.DeityNether;
@@ -42,6 +45,17 @@ public class NetherTime {
 			return secs + " seconds";
 		}else{
 			return mins + "minutes and " + secs + " seconds";
+		}
+	}
+	
+	public boolean checkResetStatus(){
+		try {
+			String sql = "SELECT * FROM `nether-reset-log` WHERE `id`='1'";
+			ResultSet rs = plugin.mysql.getResultSet(sql);
+			rs.next();
+			return false;
+		} catch (SQLException e) {
+			return false;
 		}
 	}
 	
