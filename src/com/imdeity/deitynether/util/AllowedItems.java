@@ -2,36 +2,27 @@ package com.imdeity.deitynether.util;
 
 public enum AllowedItems {
 
-	//267-279
+	ARMOUR(new int[]{86, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319}),
+	FOOD(new int[]{260, 282, 297, 319, 320, 322, 350, 357, 360, 363, 364, 365, 366, 367}),
+	TOOLS(new int[]{256, 257, 258, 261, 262, });
 	
-	IRON_SHOVEL(256),
-	IRON_PICKAXE(257),
-	IRON_AXE(258),
-	APPLE(260),
-	BOW(261),
-	ARROW(262),
-	IRON_SWORD(267),
-	WOODEN_SWORD(268),
-	WOODEN_SHOVEL(269),
-	WOODEN_PICKAXE(270),
-	WOODEN_AXE(271),
-	STONE_SWORD(272),
-	STONE_SHOVEL(273),
-	STONE_PICKAXE(2754),
-	STONE_AXE(275),
-	DIAMOND_SWORD(276),
-	DIAMOND_SHOVEL(280),
-	DIAMOND_PICKAXE(281),
-	DIAMOND_AXE(282);
+	private int[] ids;
 	
-	private int id;
-	
-	private AllowedItems(int id){
-		this.id = id;
+	private AllowedItems(int[] ids){
+		this.ids = ids;
 	}
 	
-	public int getId(){
-		return this.id;
+	public int[] getIds(){
+		return this.ids;
+	}
+	
+	public static boolean contains(int id){
+		for(AllowedItems item : AllowedItems.values()){
+			for(int i : item.getIds()){
+				if(id == i) return true;
+			}
+		}
+		return false;
 	}
 	
 }

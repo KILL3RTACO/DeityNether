@@ -116,7 +116,7 @@ public class NetherSQL {
 	
 	public void setResetTime(){
 		try {
-			String sql = "UPDATE `nether-reset-log` SET `last-reset`=NOW() WHERE `id`='1'";
+			String sql = "UPDATE `nether-reset-log` SET `last-reset`=NOW(), `needs-reset`='0' WHERE `id`='1'";
 			statement(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();

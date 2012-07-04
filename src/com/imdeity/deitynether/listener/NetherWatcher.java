@@ -69,8 +69,8 @@ public class NetherWatcher implements Listener, Runnable{
 		
 		for(OfflinePlayer p : plugin.getServer().getOfflinePlayers()){
 			DeityOfflinePlayer player = new DeityOfflinePlayer(p, plugin);
-			if(player.hasEnteredNether()) //OfflinePlayer has entered the nether before, they need to wait to enter again
-				if(!player.isInNether()) //OfflinePlayer is currently NOT in the nether
+//			if(player.hasEnteredNether()) //Code not needed, they wont be in the nether because they get ported to main world onQuit
+//				if(!player.isInNether())
 					plugin.mysql.addWaitTime(player);
 		}
 		
