@@ -1,10 +1,10 @@
 name: DeityNether
 main: com.imdeity.deitynether.DeityNether
-version: 1.0.1
+version: 1.2
 description: Nether plugin for ImDeity Kingdoms
 load: startup
 commands:
   nether:
     description: Go to the nether
-    usage: /nether [regen]
+    usage: /nether [join/leave/time/regen [on | off]]
     aliases: n
