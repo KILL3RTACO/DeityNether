@@ -31,16 +31,12 @@ public class WorldManager {
 		return deleteFilesInFolder(new File(worldName + "/"));
 	}
 	
-	public boolean getNetherRegenStatus(){
-		//TODO return MySQL table value denoting the RegenStatus 
-		return false;
-	}
-	
 	public void setNetherRegenStatus(Player p, boolean status){
 		DeityPlayer admin = new DeityPlayer(p, plugin);
 		if(admin.isOp()){
-			plugin.mysql.overrideResetStatus(status);
+			plugin.config.setResetStatus(status);
 			admin.sendInfoMessage("%dNether reset status set to: %b" + status);
+			plugin.info(admin.getName() + " set the regeneration status of the nether to: " + status);
 		}else{
 			admin.sendInvalidPermissionMessage();
 		}

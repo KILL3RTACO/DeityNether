@@ -1,8 +1,5 @@
 package com.imdeity.deitynether.util;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.bukkit.entity.Player;
 
 import com.imdeity.deitynether.DeityNether;
@@ -21,10 +18,14 @@ public class NetherTime {
 	public void getTimeLeft(Player p){
 		DeityPlayer player = new DeityPlayer(p, plugin);
 		if(player.hasPermission(DeityNether.GENERAL_PERMISSION)){
-			int timeM = (3600 - player.getTimeInNether()) / 60;
-			int timeS = (3600 - player.getTimeInNether()) % 60;
-			String time = formatTime(timeM, timeS);
-			player.sendInfoMessage("%aYou have %2" + time + " %aleft");
+			if(player.hasTimeLeft()){
+				int timeM = (3600 - player.getTimeInNether()) / 60;
+				int timeS = (3600 - player.getTimeInNether()) % 60;
+				String time = formatTime(timeM, timeS);
+				player.sendInfoMessage("%aYou have %2" + time + " %aleft");
+			}else{
+				player.sendInfoMessage("%cYou need to wait " + getWaitTimeLeft(player) + "%ctill you can enter the nether again");
+			}
 		}else if(player.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
 			player.sendInfoMessage("You have unlimited time in the nether");
 		}
@@ -35,27 +36,25 @@ public class NetherTime {
 		int hours = needToWait / 3600;
 		int minutes = (needToWait % 3600) / 60;
 		int secs = (needToWait % 3600) % 60;
-		return "%6" + hours + " hours " + minutes + " minutes and " + secs + " seconds"; 
+		String h =  "", m = "", s = "";
+		if(hours != 0)
+			h = hours + "h ";
+		if(minutes != 0)
+			m = minutes + "m ";
+		if(secs != 0)
+			s = secs + "s ";
+		return "%6" + h + m + s;
 	}
 	
 	private String formatTime(int mins, int secs){
 		if(secs == 0){
-			return mins + " minutes";
+			return mins + "m";
 		}else if(mins == 0){
-			return secs + " seconds";
+			return secs + "s";
+		}else if(secs == 0 && mins == 0){
+			return "no time";
 		}else{
-			return mins + "minutes and " + secs + " seconds";
-		}
-	}
-	
-	public boolean checkResetStatus(){
-		try {
-			String sql = "SELECT * FROM `nether-reset-log` WHERE `id`='1'";
-			ResultSet rs = plugin.mysql.getResultSet(sql);
-			rs.next();
-			return false;
-		} catch (SQLException e) {
-			return false;
+			return mins + "m " + secs + "s ";
 		}
 	}
 	

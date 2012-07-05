@@ -38,16 +38,16 @@ public class DeityNether extends JavaPlugin{
 		getCommand("nether").setExecutor(executor);
 		info("Loading config...");
 		config.loadDefaults();
+		checkNetherDeletionStatus();
 		try {
 			setup();
-			info("Connected!");
+			info("[MySQL] Connected!");
 		} catch (Exception e) {
 			info("MySQL setup incorrectly, check the config.yml");
 		}
 		if(!hasError){
 			getServer().getPluginManager().registerEvents(watcher, this);
 			getServer().getScheduler().scheduleSyncRepeatingTask(this, watcher, 0L, 20L); //No delay, repeats every 20 ticks (1 second)
-			checkNetherDeletionStatus();
 		}
 		info("Enabled");
 	}
@@ -68,11 +68,26 @@ public class DeityNether extends JavaPlugin{
 		getServer().broadcastMessage(message);
 	}
 	
+	public void checkNetherResetStatus(){
+		int days = config.getRegenerationInterval();
+		String ts = config.getLastReset();
+		Timestamp reset = Timestamp.valueOf(ts);
+		reset.setTime(reset.getTime() + (days * 24 * 60 * 60 * 1000));
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		if(now.equals(reset) || now.after(reset)){
+			config.setResetStatus(true);
+		}
+	}
+	
 	private void checkNetherDeletionStatus(){
-		boolean needsDeleting = mysql.getResetStatus();
+		boolean needsDeleting = config.getResetStatus();
 		if(needsDeleting){
+			info("Deleteing the Nether...");
 			wm.deleteWorld(config.getNetherWorldName());
-			mysql.setResetTime();
+			config.setLastReset();
+			info("Nether deleted!");
+		}else{
+			info("Nether doesn't need to be deleted");
 		}
 	}
 	

@@ -2,6 +2,7 @@ package com.imdeity.deitynether;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,6 +22,8 @@ public class Config{
 	public void loadDefaults(){
 		if(!config.contains("world.regneration-interval-in-days"))			//World options
 			config.set("world.nether.regeneration-interval-in-days", 7);
+		if(!config.contains("world.nether.needs-regeneration"))
+			config.set("world.nether.needs-regeneration", false);
 		if(!config.contains("world.nether.wait-time-in-hours"))
 			config.set("world.nether.wait-time-in-hours", 12);
 		if(!config.contains("world.nether.name"))
@@ -29,14 +32,10 @@ public class Config{
 			config.set("world.nether.pigman-gold-drop-chance", 10);
 		if(!config.contains("world.nether.gold-blocks-need"))
 			config.set("world.nether.gold-blocks-needed", 1);
+		if(!config.contains("world.nether.last-reset"))
+			config.set("world.nether.last-reset", new Timestamp(System.currentTimeMillis()).toString());
 		if(!config.contains("world.main.name"))
 			config.set("world.main.name", "world");
-		if(!config.contains("spawn.main-world.x"))							//World spawn options
-			config.set("spawn.main.x", 0);
-		if(!config.contains("spawn.main.y"))
-			config.set("spawn.main.y", 64);
-		if(!config.contains("spawn.main.z"))
-			config.set("spawn.main.z", 0);
 		if(!config.contains("spawn.nether.x"))
 			config.set("spawn.nether.x", 0);
 		if(!config.contains("spawn.nether.y"))
@@ -76,14 +75,6 @@ public class Config{
 		return getString("world.main.name");
 	}
 	
-	public Location getMainWorldSpawn(){
-		int x = getInt("spawn.main.x");
-		int y = getInt("spawn.main.y");
-		int z = getInt("spawn.main.z");
-		World world = Bukkit.getServer().getWorld(getMainWorldName());
-		return new Location(world, x, y, z);
-	}
-	
 	public int getNeededGold(){
 		return getInt("world.nether.gold-blocks-needed");
 	}
@@ -116,6 +107,14 @@ public class Config{
 		return new Location(world, x, y, z);
 	}
 	
+	public Location getMainWorldSpawn(){
+		return Bukkit.getServer().getWorld(getMainWorldName()).getSpawnLocation();
+	}
+	
+	public boolean getResetStatus(){
+		return getBoolean("world.nether.needs-regeneration");
+	}
+	
 	public int getWaitTime(){
 		return getInt("world.nether.wait-time-in-hours") * 3600;
 	}
@@ -124,12 +123,31 @@ public class Config{
 		return getString("world.nether.name");
 	}
 	
-	public String getString(String path){
+	private boolean getBoolean(String path){
+		return config.getBoolean(path);
+	}
+	
+	private String getString(String path){
 		return config.getString(path);
 	}
 	
-	public int getInt(String path){
+	private int getInt(String path){
 		return config.getInt(path);
+	}
+	
+	public void setResetStatus(boolean status){
+		config.set("world.nether.needs-regeneration", status);
+		save();
+	}
+	
+	public String getLastReset(){
+		return getString("world.nether.last-reset");
+	}
+	
+	public void setLastReset(){
+		config.set("world.nether.last-reset", new Timestamp(System.currentTimeMillis()).toString());
+		config.set("world.nether.needs-regeneration", false);
+		save();
 	}
 	
 }

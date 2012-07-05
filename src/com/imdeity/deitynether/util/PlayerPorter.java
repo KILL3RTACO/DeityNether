@@ -23,7 +23,7 @@ public class PlayerPorter {
 			if(player.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
 				player.sendMessage(DeityNether.HEADER + "§cYou are already in the nether");
 			}else{
-				if(player.hasWaited()){
+				if(player.hasWaited() || player.hasTimeLeft()){
 					int result = testPlayerInventory(player);
 					if(result == 1){
 						player.getInventory().removeItem(new ItemStack(Material.GOLD_BLOCK, plugin.config.getNeededGold()));
@@ -54,11 +54,11 @@ public class PlayerPorter {
 		}else{
 			player.sendInfoMessage("%aTeleporting you to the main world...");
 			player.teleport(plugin.config.getMainWorldSpawn());
-			plugin.mysql.setLeaveTime(player);
+			plugin.mysql.setLeaveTime(player, false);
 		}
 	}
 	
-	private int testPlayerInventory(Player p){
+	private int testPlayerInventory(DeityPlayer p){
 		int gold = 0;
 		for(ItemStack i : p.getInventory()){
 			if(i != null)

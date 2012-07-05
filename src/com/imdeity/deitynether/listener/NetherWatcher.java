@@ -43,7 +43,7 @@ public class NetherWatcher implements Listener, Runnable{
 				event.getDrops().add(drop);
 			}
 		}else if(entity instanceof Player){
-			plugin.mysql.setLeaveTime((Player)event.getEntity());
+			plugin.mysql.setLeaveTime(new DeityPlayer((Player)event.getEntity(), plugin), true);
 		}
 	}
 	
@@ -69,12 +69,10 @@ public class NetherWatcher implements Listener, Runnable{
 		
 		for(OfflinePlayer p : plugin.getServer().getOfflinePlayers()){
 			DeityOfflinePlayer player = new DeityOfflinePlayer(p, plugin);
-//			if(player.hasEnteredNether()) //Code not needed, they wont be in the nether because they get ported to main world onQuit
-//				if(!player.isInNether())
-					plugin.mysql.addWaitTime(player);
+				plugin.mysql.addWaitTime(player);
 		}
 		
-		plugin.mysql.checkResetStatus();
+		plugin.checkNetherResetStatus();
 	}
 	
 	private void checkPlayer(DeityPlayer player){
