@@ -26,11 +26,15 @@ that we can change later.
 TODO
 =======
 
-Finished? - doing bug testing
+Awaiting approval from vanZeben
 
 What's been added
 ==================
 
+- Commands:
+  */nether join/leave
+  */nether time - improved so can be used at any time
+  */nether regen [on/off] (This is not like a light switch. This command will override the current regen status)
 - MySQL:
   *Player actions, such as leave and joining
   *Counters, such as how long a player has been in the nether and how long they need to wait before joining again
