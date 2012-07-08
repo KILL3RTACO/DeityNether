@@ -23,7 +23,9 @@ public class PlayerPorter {
 		DeityPlayer player = new DeityPlayer(p, plugin);
 		if(p.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
 			player.sendInfoMessage("%aTeleporting you to the nether...");
+			testSpawn();
 			p.teleport(plugin.config.getNetherWorldSpawn());
+				
 		}else if(p.hasPermission(DeityNether.GENERAL_PERMISSION)){
 			if(p.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
 				player.sendErrorMessage("You are already in the nether");
@@ -33,7 +35,7 @@ public class PlayerPorter {
 					if(result == 1){
 						p.getInventory().removeItem(new ItemStack(Material.GOLD_BLOCK, plugin.config.getNeededGold()));
 						player.sendInfoMessage("%aTeleporting you to the nether...");
-						p.teleport(plugin.config.getNetherWorldSpawn());
+						testSpawn();
 						plugin.mysql.setJoinTime(p);
 					}else if(result == 0){ //not enough gold
 						player.sendErrorMessage("You do not have enough gold to go to the nether. Go get more.");
@@ -80,6 +82,13 @@ public class PlayerPorter {
 			return 2;
 		else
 			return 0;
+	}
+	
+	private void testSpawn(){
+		if(plugin.needsSpawn){
+			plugin.wm.createSpawn(plugin.config.getNetherWorldSpawn());
+			plugin.needsSpawn = false;
+		}
 	}
 	
 }

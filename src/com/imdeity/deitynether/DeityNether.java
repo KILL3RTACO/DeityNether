@@ -25,6 +25,7 @@ public class DeityNether extends JavaPlugin{
 	public NetherWatcher watcher = new NetherWatcher(this);
 	public NetherSQL mysql = null;
 	public static boolean hasError = false;
+	public boolean needsSpawn = false;
 	public static final String GENERAL_PERMISSION = "Deity.nether.general";
 	public static final String OVERRIDE_PERMISSION = "Deity.nether.override";
 	
@@ -33,8 +34,6 @@ public class DeityNether extends JavaPlugin{
 	}
 	
 	public void onEnable(){
-		if(AllowedItems.contains(273))
-			info("YAY");
 		CommandExecutor executor = new NetherCommand(this);
 		addDataFolders();
 		getCommand("nether").setExecutor(executor);
@@ -46,6 +45,7 @@ public class DeityNether extends JavaPlugin{
 			info("[MySQL] Connected!");
 		} catch (Exception e) {
 			info("MySQL setup incorrectly, check the config.yml");
+			hasError = true;
 		}
 		if(!hasError){
 			getServer().getPluginManager().registerEvents(watcher, this);
@@ -88,6 +88,10 @@ public class DeityNether extends JavaPlugin{
 			wm.deleteWorld(config.getNetherWorldName());
 			config.setLastReset();
 			info("Nether deleted!");
+			info("Resetting spawn height...");
+			config.setNetherSpawnY(64);
+			needsSpawn = true;
+			info("Spawn will be created when the first player joins the nether");
 		}else{
 			info("Nether doesn't need to be deleted");
 		}

@@ -135,6 +135,11 @@ public class Config{
 		return config.getInt(path);
 	}
 	
+	public void setNetherSpawnY(int y){
+		config.set("spawn.nether.y", y);
+		save();
+	}
+	
 	public void setResetStatus(boolean status){
 		config.set("world.nether.needs-regeneration", status);
 		save();

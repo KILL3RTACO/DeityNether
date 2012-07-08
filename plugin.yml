@@ -1,6 +1,6 @@
 name: DeityNether
 main: com.imdeity.deitynether.DeityNether
-version: 1.2.2
+version: 1.2.4
 description: Nether plugin for ImDeity Kingdoms
 load: startup
 commands:
