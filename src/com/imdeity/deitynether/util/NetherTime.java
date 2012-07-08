@@ -17,7 +17,9 @@ public class NetherTime {
 	
 	public void getTimeLeft(Player p){
 		DeityPlayer player = new DeityPlayer(p, plugin);
-		if(player.hasPermission(DeityNether.GENERAL_PERMISSION)){
+		if(p.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
+			player.sendInfoMessage("You have unlimited time in the nether");
+		}else if(p.hasPermission(DeityNether.GENERAL_PERMISSION)){
 			if(player.hasTimeLeft()){
 				int timeM = (3600 - player.getTimeInNether()) / 60;
 				int timeS = (3600 - player.getTimeInNether()) % 60;
@@ -26,8 +28,6 @@ public class NetherTime {
 			}else{
 				player.sendInfoMessage("%cYou need to wait " + getWaitTimeLeft(player) + "%ctill you can enter the nether again");
 			}
-		}else if(player.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
-			player.sendInfoMessage("You have unlimited time in the nether");
 		}
 	}
 	

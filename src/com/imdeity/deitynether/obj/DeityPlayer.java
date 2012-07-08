@@ -3,16 +3,13 @@ package com.imdeity.deitynether.obj;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
 import com.imdeity.deitynether.DeityNether;
 import com.imdeity.deitynether.util.ChatUtils;
 import com.imdeity.deitynether.util.NetherTime;
 
-public class DeityPlayer{
+public class DeityPlayer{	//TODO might need remove ANY instance of Player (including constructor)
 
 	private Player p = null;
 	private ChatUtils cu = new ChatUtils();
@@ -27,7 +24,7 @@ public class DeityPlayer{
 	
 	public Timestamp getLastLeave(){
 		try {
-			String name = getName();
+			String name = p.getName();
 			String sql = "SELECT `time` FROM `nether_actions` WHERE `player`='" + name + "' AND `action`='leave'";
 			ResultSet rs = plugin.mysql.getResultSet(sql);
 			rs.next();
@@ -40,7 +37,7 @@ public class DeityPlayer{
 	
 	public int getTimeInNether(){
 		try {
-			String name = getName();
+			String name = p.getName();
 			String sql = "SELECT `time_in_nether` FROM `nether_stats` WHERE `player`='" + name + "'";
 			ResultSet rs  = plugin.mysql.getResultSet(sql);
 			if(rs.next())
@@ -54,7 +51,7 @@ public class DeityPlayer{
 	
 	public int getTimeWaited(){
 		try {
-			String name = getName();
+			String name = p.getName();
 			String sql = "SELECT `time_waited` FROM `nether_stats` WHERE `player`='" + name + "'";
 			ResultSet rs = plugin.mysql.getResultSet(sql);
 			if(rs.next()){
@@ -69,7 +66,7 @@ public class DeityPlayer{
 	
 	public boolean hasEnteredNether(){
 		try {
-			String name = getName();
+			String name = p.getName();
 			String sql = "SELECT `id` FROM `nether_actions` WHERE `player`='" + name + "' AND `action`='join'";
 			ResultSet rs = plugin.mysql.getResultSet(sql);
 			if(!rs.next()){ //Row may not exist, but they also might've left and THAT row will exist
@@ -99,11 +96,11 @@ public class DeityPlayer{
 	}
 	
 	public void sendErrorMessage(String message){
-		sendMessage(cu.format("%c" + message, true));
+		p.sendMessage(cu.format("%c" + message, true));
 	}
 	
 	public void sendInfoMessage(String message){
-		sendMessage(cu.format(message, true));
+		p.sendMessage(cu.format(message, true));
 	}
 	
 	public void sendInvalidPermissionMessage(){
@@ -111,56 +108,26 @@ public class DeityPlayer{
 	}
 	
 	public void sendPluginHelp(){ //TODO add colour
-		sendMessage(cu.format("%3-----[%bDeityNether Help%3]-----", false));
-		sendMessage(cu.format("/nether [join | leave] - Join or leave the nether", false));
-		sendMessage(cu.format("/nether time - See how much time you have left", false));
-		if(isOp())
-			sendMessage(cu.format("/nether regen [on | off] - Override the regeneration status for the nether", false)); //TODO tell console who reset status
-		sendMessage(cu.format("/nether info - Plugin information", false));
+		p.sendMessage(cu.format("%3-----[%bDeityNether Help%3]-----", false));
+		p.sendMessage(cu.format("/nether [join | leave] - Join or leave the nether", false));
+		p.sendMessage(cu.format("/nether time - See how much time you have left", false));
+		if(p.isOp())
+			p.sendMessage(cu.format("/nether regen [on | off] - Override the regeneration status for the nether", false)); //TODO tell console who reset status
+		p.sendMessage(cu.format("/nether info - Plugin information", false));
 	}
 	
 	public void sendPluginInformation(){
-		sendMessage(cu.format("%3-----[%bDeityNether Information%3]-----", false));
-		sendMessage(cu.format("%3#%0-%b###%0-", false));
-		sendMessage(cu.format("%0--%b#%0--%b#     %3Developed by: %bKILL3RTACO", false));
-		sendMessage(cu.format("%3#%0-%b#%0--%b#", false));
-		sendMessage(cu.format("%3#%0-%b#%0--%b#", false));
-		sendMessage(cu.format("%3#%0-%b###%0-", false));
+		p.sendMessage(cu.format("%3-----[%bDeityNether Information%3]-----", false));
+		p.sendMessage(cu.format("%3#%0-%b###%0-", false));
+		p.sendMessage(cu.format("%0--%b#%0--%b#     %3Developed by: %bKILL3RTACO", false));
+		p.sendMessage(cu.format("%3#%0-%b#%0--%b#", false));
+		p.sendMessage(cu.format("%3#%0-%b#%0--%b#", false));
+		p.sendMessage(cu.format("%3#%0-%b###%0-", false));
 	}
 	
 	public void sendThanksMessage(){
-		sendMessage(cu.format("%3Thank you for visiting the nether, you may return in %b" + (nt.neededWaitTime / 3600) + " hours", true));
-	}
-//----------------------------------------------------------------------------------
-
-	public String getName() {
-		return p.getName();
+		p.sendMessage(cu.format("%3Thank you for visiting the nether, you may return in %b" + (nt.neededWaitTime / 3600) + " hours", true));
 	}
 
-	public World getWorld() {
-		return p.getWorld();
-	}
-
-	public boolean teleport(Location arg0) {
-		return p.teleport(arg0);
-	}
-
-	public boolean hasPermission(String permission){
-		return p.hasPermission(permission);
-	}
-	
-	public Inventory getInventory(){
-		return p.getInventory();
-	}
-	
-	public boolean isOp() {
-		return p.isOp();
-	}
-
-	
-	public void sendMessage(String arg0) {
-		p.sendMessage(arg0);
-		
-	}
 
 }

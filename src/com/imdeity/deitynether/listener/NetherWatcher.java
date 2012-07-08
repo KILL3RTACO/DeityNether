@@ -13,7 +13,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.imdeity.deitynether.DeityNether;
-import com.imdeity.deitynether.obj.DeityOfflinePlayer;
 import com.imdeity.deitynether.obj.DeityPlayer;
 import com.imdeity.deitynether.util.NetherTime;
 import com.imdeity.deitynether.util.PlayerPorter;
@@ -43,7 +42,7 @@ public class NetherWatcher implements Listener, Runnable{
 				event.getDrops().add(drop);
 			}
 		}else if(entity instanceof Player){
-			plugin.mysql.setLeaveTime(new DeityPlayer((Player)event.getEntity(), plugin), true);
+			plugin.mysql.setLeaveTime((Player)event.getEntity(), true);
 		}
 	}
 	
@@ -59,26 +58,28 @@ public class NetherWatcher implements Listener, Runnable{
 		for(Player p : plugin.getServer().getOnlinePlayers()){
 			DeityPlayer player = new DeityPlayer(p, plugin);
 			if(p.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
-				plugin.mysql.addTime(player);
-				checkPlayer(player);
+				plugin.mysql.addTime(p);
+				checkPlayer(p);
 			}else{
 				if(player.getTimeWaited() != nt.neededWaitTime)
-					plugin.mysql.addWaitTime(player);
+					plugin.mysql.addWaitTime(p);
 			}
 		}
 		
 		for(OfflinePlayer p : plugin.getServer().getOfflinePlayers()){
-			DeityOfflinePlayer player = new DeityOfflinePlayer(p, plugin);
-				plugin.mysql.addWaitTime(player);
+				plugin.mysql.addWaitTime(p);
 		}
 		
 		plugin.checkNetherResetStatus();
 	}
 	
-	private void checkPlayer(DeityPlayer player){
-		if(player.getTimeInNether() == 3600){			//Their is up
-			player.sendThanksMessage();					//"Thank you for entering the nether you may again in <config-value> hours
-			player.teleport(plugin.config.getMainWorldSpawn());
+	private void checkPlayer(Player p){
+		DeityPlayer player = new DeityPlayer(p, plugin); 
+		if(!p.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
+			if(player.getTimeInNether() == 3600){			//Their time is up
+				player.sendThanksMessage();					//"Thank you for entering the nether you may again in <config-value> hours
+				p.teleport(plugin.config.getMainWorldSpawn());
+			}
 		}
 	}
 	

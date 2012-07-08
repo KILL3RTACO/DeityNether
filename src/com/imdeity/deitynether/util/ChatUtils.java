@@ -2,9 +2,9 @@ package com.imdeity.deitynether.util;
 
 import org.bukkit.ChatColor;
 
-import com.imdeity.deitynether.DeityNether;
-
 public class ChatUtils {
+	
+	private String header = format("%7[%c*ImDeity*%7]%f ", false);
 	
 	public String format(String message, boolean addHeader){
 		if(message.contains("%a"))						//letters
@@ -42,7 +42,7 @@ public class ChatUtils {
 			message = message.replaceAll("%9", ChatColor.BLUE.toString());
 
 		if(addHeader)
-			message = DeityNether.HEADER + message;
+			message = header + message;
 		
 		return message;
 	}

@@ -22,7 +22,7 @@ public class DeityOfflinePlayer {
 	
 	public int getTimeWaited(){
 		try {
-			String name = getName();
+			String name = p.getName();
 			String sql = "SELECT `time_waited` FROM `nether_stats` WHERE `player`='" + name + "'";
 			ResultSet rs = plugin.mysql.getResultSet(sql);
 			if(rs.next()){
@@ -38,7 +38,7 @@ public class DeityOfflinePlayer {
 	
 	public boolean hasEnteredNether(){
 		try {
-			String name = getName();
+			String name = p.getName();
 			String sql = "SELECT `id` FROM `nether_actions` WHERE `player`='" + name + "' AND `action`='join'";
 			ResultSet rs = plugin.mysql.getResultSet(sql);
 			if(!rs.next()){ //Row may not exist, but they also might've left and THAT row will exist
@@ -59,7 +59,7 @@ public class DeityOfflinePlayer {
 	
 	public boolean isInNether(){
 		try {
-			String name = getName();
+			String name = p.getName();
 			String sql = "SELECT `id` FROM `nether_actions` WHERE `player`='" + name +"' AND `action`='join'";
 			ResultSet rs = plugin.mysql.getResultSet(sql);
 			return rs.next(); 
@@ -69,12 +69,6 @@ public class DeityOfflinePlayer {
 			e.printStackTrace();
 			return false;
 		}
-	}
-	
-	//----------------------------------------------------------------
-	
-	public String getName() {
-		return p.getName();
 	}
 
 }

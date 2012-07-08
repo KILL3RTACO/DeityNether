@@ -7,6 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
 import com.imdeity.deitynether.DeityNether;
 import com.imdeity.deitynether.obj.DeityOfflinePlayer;
 import com.imdeity.deitynether.obj.DeityPlayer;
@@ -63,7 +66,7 @@ public class NetherSQL {
 		
 	}
 	
-	public void setJoinTime(DeityPlayer p){
+	public void setJoinTime(Player p){
 		try {
 			String name = p.getName();
 			String sql = "SELECT * FROM `nether_actions` WHERE `player`='" + name + "'";
@@ -85,7 +88,7 @@ public class NetherSQL {
 		}
 	}
 	
-	public void setLeaveTime(DeityPlayer player, boolean playerDied){
+	public void setLeaveTime(Player player, boolean playerDied){
 		try {
 			String sql;
 			sql = "UPDATE `nether_actions` SET `action`='leave', `time`=NOW() WHERE `player`='" + player.getName() + "'";
@@ -99,12 +102,13 @@ public class NetherSQL {
 		}
 	}
 	
-	public void addTime(DeityPlayer player){
+	public void addTime(Player p){
+		DeityPlayer player = new DeityPlayer(p, plugin);
 		try {
 			int timeWaited = player.getTimeWaited();
 			int timeInNether = player.getTimeInNether();
 			if(timeInNether != 3600){
-				String sql = "UPDATE `nether_stats` SET `time_in_nether`='" + (timeWaited + 1) + "' WHERE `player`='" + player.getName() + "'";
+				String sql = "UPDATE `nether_stats` SET `time_in_nether`='" + (timeWaited + 1) + "' WHERE `player`='" + p.getName() + "'";
 				statement(sql);
 			}
 		} catch (SQLException e) {
@@ -112,12 +116,13 @@ public class NetherSQL {
 		}
 	}
 	
-	public void addWaitTime(DeityPlayer player){
+	public void addWaitTime(Player p){
+		DeityPlayer player = new DeityPlayer(p, plugin);
 		try {
 			int timeWaited = player.getTimeWaited();
 			int timeInNether = player.getTimeInNether();
 			if(timeInNether == 3600){
-				String sql = "UPDATE `nether_stats` SET `time_waited`='" + (timeWaited + 1) + "' WHERE `player`='" + player.getName() + "'";
+				String sql = "UPDATE `nether_stats` SET `time_waited`='" + (timeWaited + 1) + "' WHERE `player`='" + p.getName() + "'";
 				statement(sql);
 			}
 		} catch (SQLException e) {
@@ -125,10 +130,11 @@ public class NetherSQL {
 		}
 	}
 	
-	public void addWaitTime(DeityOfflinePlayer player){
+	public void addWaitTime(OfflinePlayer p){
+		DeityOfflinePlayer player = new DeityOfflinePlayer(p, plugin);
 		try {
 			int timeWaited = player.getTimeWaited();
-			String sql = "UPDATE `nether_stats` SET `time_waited`='" + (timeWaited + 1) + "' WHERE `player`='" + player.getName() + "'";
+			String sql = "UPDATE `nether_stats` SET `time_waited`='" + (timeWaited + 1) + "' WHERE `player`='" + p.getName() + "'";
 			if(timeWaited < nt.neededWaitTime)
 				statement(sql);
 		} catch (SQLException e) {

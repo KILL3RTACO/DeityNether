@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.imdeity.deitynether.DeityNether;
+import com.imdeity.deitynether.util.ChatUtils;
 import com.imdeity.deitynether.util.NetherTime;
 import com.imdeity.deitynether.util.PlayerPorter;
 
@@ -14,6 +15,7 @@ public class NetherCommand implements CommandExecutor{
 	private DeityNether plugin = null;
 	private PlayerPorter porter = null;
 	private NetherTime nt = null;
+	private ChatUtils cu = new ChatUtils();
 	
 	public NetherCommand(DeityNether instance){
 		plugin = instance;
@@ -40,7 +42,7 @@ public class NetherCommand implements CommandExecutor{
 				}else if(args[0].equalsIgnoreCase("time")){
 					nt.getTimeLeft(p);
 				}else{
-					p.sendMessage(DeityNether.HEADER + "§cInvalid argument(s), please use §f\"/nether ?\" §cfor help");
+					p.sendMessage(cu.format("%cInvalid argument(s), please use %f\"/nether ?\" %cfor help", true));
 				}
 			}else if(args.length == 2){
 				if(args[0].equalsIgnoreCase("regen")){
@@ -49,7 +51,7 @@ public class NetherCommand implements CommandExecutor{
 					else if(args[1].equalsIgnoreCase("off"))
 						plugin.wm.setNetherRegenStatus(p, false);
 					else
-						p.sendMessage(DeityNether.HEADER + "§cInvalid argument(s), please use §f\"/nether ?\" §cfor help");
+						p.sendMessage(cu.format("%cInvalid argument(s), please use %f\"/nether ?\" %cfor help", true));
 				}
 			}
 		}else{

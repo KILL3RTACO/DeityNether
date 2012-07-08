@@ -12,13 +12,13 @@ public enum AllowedItems {
 		this.ids = ids;
 	}
 	
-	public int[] getIds(){
+	private int[] getIds(){
 		return this.ids;
 	}
 	
 	public static boolean contains(int id){
-		for(AllowedItems item : AllowedItems.values()){
-			for(int i : item.getIds()){
+		for(AllowedItems group : AllowedItems.values()){
+			for(int i : group.getIds()){
 				if(id == i) return true;
 			}
 		}

@@ -14,6 +14,7 @@ import com.imdeity.deitynether.cmd.NetherCommand;
 import com.imdeity.deitynether.listener.NetherWatcher;
 import com.imdeity.deitynether.obj.DeityPlayer;
 import com.imdeity.deitynether.sql.NetherSQL;
+import com.imdeity.deitynether.util.AllowedItems;
 import com.imdeity.deitynether.util.WorldManager;
 
 public class DeityNether extends JavaPlugin{
@@ -24,7 +25,6 @@ public class DeityNether extends JavaPlugin{
 	public NetherWatcher watcher = new NetherWatcher(this);
 	public NetherSQL mysql = null;
 	public static boolean hasError = false;
-	public static final String HEADER = "§7[§c*ImDeity*§7]§f ";
 	public static final String GENERAL_PERMISSION = "Deity.nether.general";
 	public static final String OVERRIDE_PERMISSION = "Deity.nether.override";
 	
@@ -33,6 +33,8 @@ public class DeityNether extends JavaPlugin{
 	}
 	
 	public void onEnable(){
+		if(AllowedItems.contains(273))
+			info("YAY");
 		CommandExecutor executor = new NetherCommand(this);
 		addDataFolders();
 		getCommand("nether").setExecutor(executor);
