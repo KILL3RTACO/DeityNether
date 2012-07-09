@@ -56,12 +56,11 @@ public class NetherWatcher implements Listener, Runnable{
 	@Override
 	public void run() {
 		for(Player p : plugin.getServer().getOnlinePlayers()){
-			DeityPlayer player = new DeityPlayer(p, plugin);
 			if(p.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
 				plugin.mysql.addTime(p);
 				checkPlayer(p);
 			}else{
-				if(player.getTimeWaited() != nt.neededWaitTime)
+				if(DeityPlayer.getTimeWaited(p, plugin) != nt.neededWaitTime)
 					plugin.mysql.addWaitTime(p);
 			}
 		}
@@ -74,10 +73,9 @@ public class NetherWatcher implements Listener, Runnable{
 	}
 	
 	private void checkPlayer(Player p){
-		DeityPlayer player = new DeityPlayer(p, plugin); 
 		if(!p.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
-			if(player.getTimeInNether() == 3600){			//Their time is up
-				player.sendThanksMessage();					//"Thank you for entering the nether you may again in <config-value> hours
+			if(DeityPlayer.getTimeInNether(p, plugin) == 3600){			//Their time is up
+				DeityPlayer.sendThanksMessage(p, plugin);				//"Thank you for entering the nether you may again in <config-value> hours
 				p.teleport(plugin.config.getMainWorldSpawn());
 			}
 		}

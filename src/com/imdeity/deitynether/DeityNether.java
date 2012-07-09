@@ -14,7 +14,6 @@ import com.imdeity.deitynether.cmd.NetherCommand;
 import com.imdeity.deitynether.listener.NetherWatcher;
 import com.imdeity.deitynether.obj.DeityPlayer;
 import com.imdeity.deitynether.sql.NetherSQL;
-import com.imdeity.deitynether.util.AllowedItems;
 import com.imdeity.deitynether.util.WorldManager;
 
 public class DeityNether extends JavaPlugin{
@@ -115,13 +114,11 @@ public class DeityNether extends JavaPlugin{
 	}
 	
 	public void sendHelp(Player p){
-		DeityPlayer player = new DeityPlayer(p, this);
-		player.sendPluginHelp();
+		DeityPlayer.sendPluginHelp(p);
 	}
 	
 	public void sendInfo(Player p){
-		DeityPlayer player = new DeityPlayer(p, this);
-		player.sendPluginInformation();
+		DeityPlayer.sendPluginInformation(p);
 		
 	}
 	

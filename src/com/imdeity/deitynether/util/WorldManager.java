@@ -23,18 +23,17 @@ public class WorldManager {
 	}
 	
 	public void setNetherRegenStatus(Player p, boolean status){
-		DeityPlayer admin = new DeityPlayer(p, plugin);
 		if(p.isOp()){
 			plugin.config.setResetStatus(status);
-			admin.sendInfoMessage("%dNether reset status set to: %b" + status);
+			DeityPlayer.sendInfoMessage("%dNether reset status set to: %b" + status, p);
 			plugin.info(p.getName() + " set the regeneration status of the nether to: " + status);
 		}else{
-			admin.sendInvalidPermissionMessage();
+			DeityPlayer.sendInvalidPermissionMessage(p);
 		}
 	}
 	
 	public void createSpawn(Location center){ //Corners 1 and 2 are for the box, 1 and 3 is the floor
-		//center = getNewCenter(center);
+		center = getNewCenter(center);
 		int r = 10;
 		int h = 5;
 		World nether = plugin.getServer().getWorld(plugin.config.getNetherWorldName());

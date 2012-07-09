@@ -103,10 +103,9 @@ public class NetherSQL {
 	}
 	
 	public void addTime(Player p){
-		DeityPlayer player = new DeityPlayer(p, plugin);
 		try {
-			int timeWaited = player.getTimeWaited();
-			int timeInNether = player.getTimeInNether();
+			int timeWaited = DeityPlayer.getTimeWaited(p, plugin);
+			int timeInNether = DeityPlayer.getTimeInNether(p, plugin);
 			if(timeInNether != 3600){
 				String sql = "UPDATE `nether_stats` SET `time_in_nether`='" + (timeWaited + 1) + "' WHERE `player`='" + p.getName() + "'";
 				statement(sql);
@@ -117,10 +116,9 @@ public class NetherSQL {
 	}
 	
 	public void addWaitTime(Player p){
-		DeityPlayer player = new DeityPlayer(p, plugin);
 		try {
-			int timeWaited = player.getTimeWaited();
-			int timeInNether = player.getTimeInNether();
+			int timeWaited = DeityPlayer.getTimeWaited(p, plugin);
+			int timeInNether = DeityPlayer.getTimeInNether(p, plugin);
 			if(timeInNether == 3600){
 				String sql = "UPDATE `nether_stats` SET `time_waited`='" + (timeWaited + 1) + "' WHERE `player`='" + p.getName() + "'";
 				statement(sql);
@@ -131,9 +129,8 @@ public class NetherSQL {
 	}
 	
 	public void addWaitTime(OfflinePlayer p){
-		DeityOfflinePlayer player = new DeityOfflinePlayer(p, plugin);
 		try {
-			int timeWaited = player.getTimeWaited();
+			int timeWaited = DeityOfflinePlayer.getTimeWaited(p, plugin);
 			String sql = "UPDATE `nether_stats` SET `time_waited`='" + (timeWaited + 1) + "' WHERE `player`='" + p.getName() + "'";
 			if(timeWaited < nt.neededWaitTime)
 				statement(sql);

@@ -9,18 +9,9 @@ import com.imdeity.deitynether.DeityNether;
 import com.imdeity.deitynether.util.NetherTime;
 
 public class DeityOfflinePlayer {
-
-	private OfflinePlayer p = null;
-	private DeityNether plugin = null;
-	private NetherTime nt = null;
 	
-	public DeityOfflinePlayer(OfflinePlayer player, DeityNether instance){
-		plugin = instance;
-		p = player;
-		nt = new NetherTime(plugin);
-	}
-	
-	public int getTimeWaited(){
+	public static int getTimeWaited(OfflinePlayer p, DeityNether plugin){
+		NetherTime nt = new NetherTime(plugin);
 		try {
 			String name = p.getName();
 			String sql = "SELECT `time_waited` FROM `nether_stats` WHERE `player`='" + name + "'";
@@ -36,7 +27,8 @@ public class DeityOfflinePlayer {
 		}
 	}
 	
-	public boolean hasEnteredNether(){
+	@Deprecated
+	public static boolean hasEnteredNether(OfflinePlayer p, DeityNether plugin){
 		try {
 			String name = p.getName();
 			String sql = "SELECT `id` FROM `nether_actions` WHERE `player`='" + name + "' AND `action`='join'";
@@ -57,7 +49,8 @@ public class DeityOfflinePlayer {
 		}
 	}
 	
-	public boolean isInNether(){
+	@Deprecated
+	public static boolean isInNether(OfflinePlayer p, DeityNether plugin){
 		try {
 			String name = p.getName();
 			String sql = "SELECT `id` FROM `nether_actions` WHERE `player`='" + name +"' AND `action`='join'";

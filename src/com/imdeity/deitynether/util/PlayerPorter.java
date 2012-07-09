@@ -20,46 +20,44 @@ public class PlayerPorter {
 	}
 	
 	public void sendToNether(Player p){
-		DeityPlayer player = new DeityPlayer(p, plugin);
 		if(p.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
-			player.sendInfoMessage("%aTeleporting you to the nether...");
+			DeityPlayer.sendInfoMessage("%aTeleporting you to the nether...", p);
 			testSpawn();
 			p.teleport(plugin.config.getNetherWorldSpawn());
 				
 		}else if(p.hasPermission(DeityNether.GENERAL_PERMISSION)){
 			if(p.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
-				player.sendErrorMessage("You are already in the nether");
+				DeityPlayer.sendErrorMessage("You are already in the nether", p);
 			}else{
-				if(player.hasWaited() || player.hasTimeLeft()){
+				if(DeityPlayer.hasWaited(p, plugin) || DeityPlayer.hasTimeLeft(p, plugin)){
 					int result = testPlayerInventory(p);
 					if(result == 1){
 						p.getInventory().removeItem(new ItemStack(Material.GOLD_BLOCK, plugin.config.getNeededGold()));
-						player.sendInfoMessage("%aTeleporting you to the nether...");
+						DeityPlayer.sendInfoMessage("%aTeleporting you to the nether...", p);
 						testSpawn();
 						plugin.mysql.setJoinTime(p);
 					}else if(result == 0){ //not enough gold
-						player.sendErrorMessage("You do not have enough gold to go to the nether. Go get more.");
+						DeityPlayer.sendErrorMessage("You do not have enough gold to go to the nether. Go get more.", p);
 					}else if(result == -1){ //Illegal items
-						player.sendErrorMessage("You have items in your inventory that are not allowed in the nether. Remove them and try again");
+						DeityPlayer.sendErrorMessage("You have items in your inventory that are not allowed in the nether. Remove them and try again", p);
 					}else if(result == 2){ //Too much gold >.>
-						player.sendErrorMessage("You have too much gold in your inventory. Please only carry %6" + neededGold + " GOLD_BLOCK" +
-								" %cwhen going to the nether");
+						DeityPlayer.sendErrorMessage("You have too much gold in your inventory. Please only carry %6" + neededGold + " GOLD_BLOCK" +
+								" %cwhen going to the nether", p);
 					}
 				}else{
-					player.sendErrorMessage("Sorry, you need to wait " + nt.getWaitTimeLeft(player));
+					DeityPlayer.sendErrorMessage("Sorry, you need to wait " + nt.getWaitTimeLeft(p), p);
 				}
 			}
 		}else{
-			player.sendInvalidPermissionMessage();
+			DeityPlayer.sendInvalidPermissionMessage(p);
 		}
 	}
 	
 	public void sendToOverworld(Player p){
-		DeityPlayer player = new DeityPlayer(p, plugin);
 		if(p.getWorld() == plugin.getServer().getWorld(plugin.config.getMainWorldName())){
-			player.sendErrorMessage("You aren't in the nether");
+			DeityPlayer.sendErrorMessage("You aren't in the nether", p);
 		}else{
-			player.sendInfoMessage("%aTeleporting you to the main world...");
+			DeityPlayer.sendInfoMessage("%aTeleporting you to the main world...", p);
 			p.teleport(plugin.config.getMainWorldSpawn());
 			plugin.mysql.setLeaveTime(p, false);
 		}
