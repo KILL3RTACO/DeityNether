@@ -59,10 +59,12 @@ public class WorldManager {
 	
 	private Location getNewCenter(Location origin){
 		World nether = plugin.getServer().getWorld(plugin.config.getNetherWorldName());
-		for(int y = origin.getBlockY(); y <= 0; y--){
-			Location center = new Location(nether, origin.getBlockX(), y, origin.getBlockY());
-			if(NetherFloor.contains(center.getBlock().getTypeId())){
-				return center;
+		if(origin.getBlock().getType() != Material.AIR){
+			for(int y = 127; y <= 0; y--){
+				Location center = new Location(nether, origin.getBlockX(), y, origin.getBlockY());
+				if(center.getBlock().getType() == Material.AIR){
+					return center;
+				}
 			}
 		}
 		return origin;
