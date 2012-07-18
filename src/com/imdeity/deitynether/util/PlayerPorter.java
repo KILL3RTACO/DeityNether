@@ -51,41 +51,39 @@ public class PlayerPorter {
 		if(p.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
 			DeityPlayer.sendErrorMessage("You are already in the nether", p);
 		}else{
-			int result = testPlayerInventory(p);
-			if(result == 1){
+			if(testPortConditions(p)){
 				p.getInventory().removeItem(new ItemStack(Material.GOLD_BLOCK, plugin.config.getNeededGold()));
 				DeityPlayer.sendInfoMessage("%aTeleporting you to the nether...", p);
 				testSpawn();
 				p.teleport(plugin.config.getNetherWorldSpawn());
-				if(mysql) plugin.mysql.setJoinTime(p);
-			}else if(result == 0){ //not enough gold
-				DeityPlayer.sendErrorMessage("You do not have enough gold to go to the nether. Go get more.", p);
-			}else if(result == -1){ //Illegal items
-				DeityPlayer.sendErrorMessage("You have items in your inventory that are not allowed in the nether. Remove them and try again", p);
-			}else if(result == 2){ //Too much gold >.>
-				DeityPlayer.sendErrorMessage("You have too much gold in your inventory. Please only carry %6" + neededGold + " GOLD_BLOCK" +
-						" %cwhen going to the nether", p);
 			}
 		}
 	}
 	
-	private int testPlayerInventory(Player p){
+	private boolean testPortConditions(Player p){
 		int gold = 0;
 		for(ItemStack i : p.getInventory()){
 			if(i != null)
 				if(i.getType() == Material.GOLD_BLOCK){
 					gold += i.getAmount();
 				}else{
-					if(!AllowedItems.contains(i.getTypeId())) return -1;
+					if(!AllowedItems.contains(i.getTypeId())){
+						DeityPlayer.sendErrorMessage("You have items in your inventory that are not allowed in the Nether. " +
+								"Remove them and try again", p);
+						return false;
+					}
 				}
 		}
 		
 		if(gold == neededGold)
-			return 1;
-		else if(gold >= plugin.config.getNeededGold())
-			return 2;
-		else
-			return 0;
+			return true;
+		else if(gold >= plugin.config.getNeededGold()){
+			DeityPlayer.sendErrorMessage("You have too much gold. I wouldn't mind taking it... But alas, I am only an entity :'(", p);
+			return false;
+		}else{
+			DeityPlayer.sendErrorMessage("You do not have enough gold -_- Get moar nao! Omnomnomnom <3", p);
+			return false;
+		}
 	}
 	
 	private void testSpawn(){

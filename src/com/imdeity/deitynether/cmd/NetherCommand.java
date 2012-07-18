@@ -8,18 +8,15 @@ import org.bukkit.entity.Player;
 import com.imdeity.deitynether.DeityNether;
 import com.imdeity.deitynether.util.ChatUtils;
 import com.imdeity.deitynether.util.NetherTime;
-import com.imdeity.deitynether.util.PlayerPorter;
 
 public class NetherCommand implements CommandExecutor{
 
 	private DeityNether plugin = null;
-	private PlayerPorter porter = null;
 	private NetherTime nt = null;
 	private ChatUtils cu = new ChatUtils();
 	
 	public NetherCommand(DeityNether instance){
 		plugin = instance;
-		porter = new PlayerPorter(plugin);
 		nt = new NetherTime(plugin);
 	}
 	
@@ -29,16 +26,16 @@ public class NetherCommand implements CommandExecutor{
 		if(sender instanceof Player){
 			p = (Player)sender;
 			if(args.length == 0){
-				//TODO what to do here?
+				p.sendMessage("Hai there ^o^");
 			}else if(args.length == 1){
 				if(args[0].equalsIgnoreCase("?") || args[0].equalsIgnoreCase("help")){
 					plugin.sendHelp(p);
 				}else if(args[0].equalsIgnoreCase("info")){
 					plugin.sendInfo(p);
 				}else if(args[0].equalsIgnoreCase("join")){
-					porter.sendToNether(p);
+					plugin.porter.sendToNether(p);
 				}else if(args[0].equalsIgnoreCase("leave")){
-					porter.sendToOverworld(p);
+					plugin.porter.sendToOverworld(p);
 				}else if(args[0].equalsIgnoreCase("time")){
 					nt.getTimeLeft(p);
 				}else{

@@ -14,6 +14,7 @@ import com.imdeity.deitynether.cmd.NetherCommand;
 import com.imdeity.deitynether.listener.NetherWatcher;
 import com.imdeity.deitynether.obj.DeityPlayer;
 import com.imdeity.deitynether.sql.NetherSQL;
+import com.imdeity.deitynether.util.PlayerPorter;
 import com.imdeity.deitynether.util.WorldManager;
 
 public class DeityNether extends JavaPlugin{
@@ -21,6 +22,7 @@ public class DeityNether extends JavaPlugin{
 	private File configFile = new File("plugins/DeityNether/config.yml"); //No need for File.pathSeparator, as '/' works with any OS
 	public Config config = new Config(configFile);
 	public WorldManager wm = new WorldManager(this);
+	public PlayerPorter porter = new PlayerPorter(this);
 	public NetherWatcher watcher = new NetherWatcher(this);
 	public NetherSQL mysql = null;
 	public static boolean hasError = false;
@@ -29,6 +31,9 @@ public class DeityNether extends JavaPlugin{
 	public static final String OVERRIDE_PERMISSION = "Deity.nether.override";
 	
 	public void onDisable(){
+		for(Player p : getServer().getWorld(config.getNetherWorldName()).getPlayers()){
+			porter.sendToOverworld(p);
+		}
 		info("Disabled");
 	}
 	

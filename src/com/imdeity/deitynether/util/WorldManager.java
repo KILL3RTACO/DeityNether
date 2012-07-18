@@ -9,6 +9,15 @@ import org.bukkit.entity.Player;
 
 import com.imdeity.deitynether.DeityNether;
 import com.imdeity.deitynether.obj.DeityPlayer;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.patterns.SingleBlockPattern;
+import com.sk89q.worldedit.regions.CuboidRegion;
 
 public class WorldManager {
 
@@ -32,7 +41,7 @@ public class WorldManager {
 		}
 	}
 	
-	public void createSpawn(Location center){ //Corners 1 and 2 are for the box, 1 and 3 is the floor
+	public void createSpawn(Location center){ //Corners 1 and 2 are for the airbox, 1 and 3 is the floor | 11 * 11 * 5 = 605 (plenty) 
 		center = getNewCenter(center);
 		int r = 10;
 		int h = 5;
@@ -46,14 +55,18 @@ public class WorldManager {
 		plugin.info("Nether spawn height set to: " + center.getBlockY());
 	}
 	
-	private void cuboid(Location bottom, Location top, Material type){
-		for(int x = bottom.getBlockX(); x <= top.getBlockX(); x++){
-			for(int y = bottom.getBlockY(); y <= top.getBlockY(); y++){
-				for(int z = bottom.getBlockZ(); z <= top.getBlockZ(); z++){
-					new Location(plugin.getServer().getWorld(plugin.config.getNetherWorldName()), x, y, z).getBlock().setType(type);
-					plugin.info("Nether: " + x + " " + y + " " + z);
-				}
-			}
+	private void cuboid(Location p1, Location p2, Material type){
+		World world = plugin.getServer().getWorld(plugin.config.getNetherWorldName());
+		LocalWorld localWorld = new BukkitWorld(world);
+		EditSession es = new EditSession(localWorld, 3000);	//3000 is the change limit
+		Vector pos1 = new Vector().setX(p1.getBlockX()).setY(p1.getBlockY()).setZ(p1.getBlockZ());
+		Vector pos2 = new Vector().setX(p2.getBlockX()).setY(p2.getBlockY()).setZ(p2.getBlockZ());
+		CuboidRegion region = new CuboidRegion(localWorld, pos1, pos2);
+		Pattern pattern = new SingleBlockPattern(new BaseBlock(type.getId()));
+		try {
+			es.setBlocks(region, pattern);
+		} catch (MaxChangedBlocksException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -63,7 +76,7 @@ public class WorldManager {
 			for(int y = 127; y <= 0; y--){
 				Location center = new Location(nether, origin.getBlockX(), y, origin.getBlockY());
 				if(center.getBlock().getType() == Material.AIR){
-					return center;
+					return new Location(nether, origin.getBlockX(), y -2 , origin.getBlockX());
 				}
 			}
 		}

@@ -57,8 +57,10 @@ public class NetherWatcher implements Listener, Runnable{
 	public void run() {
 		for(Player p : plugin.getServer().getOnlinePlayers()){
 			if(p.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
-				plugin.mysql.addTime(p);
-				checkPlayer(p);
+				if(!p.hasPermission(DeityNether.OVERRIDE_PERMISSION) && p.hasPermission(DeityNether.GENERAL_PERMISSION)){
+					plugin.mysql.addTime(p);
+					checkPlayer(p);
+				}
 			}else{
 				if(DeityPlayer.getTimeWaited(p, plugin) != nt.neededWaitTime)
 					plugin.mysql.addWaitTime(p);
