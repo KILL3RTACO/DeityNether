@@ -26,17 +26,17 @@ public class NetherCommand implements CommandExecutor{
 					new TimeSubCommand(p);
 				}else if(subcommand.equalsIgnoreCase("regen") && args.length > 1){
 					if(p.isOp()){
-						p.sendMessage(cu.format("&4You don't have permission to do that", true));
-					}else{
 						if(args[1].equalsIgnoreCase("on")){
 							DeityNether.config.setResetStatus(true);
 							p.sendMessage(cu.format("&dNether reset status set to: &3true", true));
-							DeityNether.plugin.info(p.getName() + "set the nether deletion status to true. It will be deleted upon next restart");
+							DeityNether.plugin.info(p.getName() + " set the nether deletion status to true. It will be deleted upon next restart");
 						}else if(args[1].equalsIgnoreCase("off")){
 							DeityNether.config.setResetStatus(false);
 							p.sendMessage(cu.format("&dNether reset status set to: &3false", true));
-							DeityNether.plugin.info(p.getName() + "set the nether deletion status to false");
+							DeityNether.plugin.info(p.getName() + " set the nether deletion status to false");
 						}
+					}else{
+						p.sendMessage(cu.format("&4You don't have permission to do that", true));
 					}
 				}else if(subcommand.equalsIgnoreCase("?") || subcommand.equalsIgnoreCase("help")){
 					p.sendMessage("-----[DeityNether: Help]-----");

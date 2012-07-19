@@ -17,6 +17,7 @@ public class DeityNether extends JavaPlugin{
 
 	public static DeityNether plugin;
 	public static Config config;
+	public static Language lang;
 	public static Server server;
 	public static NetherSQL db;
 	private NetherWatcher watcher;
@@ -74,6 +75,7 @@ public class DeityNether extends JavaPlugin{
 	private void initConfig(){
 		info("Loading config...");
 		config = new Config(new File(getDataFolder() + "/config.yml"));
+		lang = new Language(new File(getDataFolder() + "/language.yml"));
 		config.addDefaultConfigValue("world.nether.regeneration-interval-in-days", 7);
 		config.addDefaultConfigValue("world.nether.needs-regeneration", true);
 		config.addDefaultConfigValue("world.nether.wait-time-in-hours", 12);
@@ -90,6 +92,8 @@ public class DeityNether extends JavaPlugin{
 		config.addDefaultConfigValue("mysql.database.password", "root");
 		config.addDefaultConfigValue("mysql.server.address", "localhost");
 		config.addDefaultConfigValue("mysql.server.port", 3306);
+		lang.addDefaultValue("header", "&7[&cDeityNether&] &f");
+		lang.addDefaultValue("nether.join", "");
 		info("Saving config...");
 		config.save();
 	}
