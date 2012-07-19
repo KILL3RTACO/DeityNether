@@ -7,34 +7,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
 import com.imdeity.deitynether.DeityNether;
-import com.imdeity.deitynether.obj.DeityOfflinePlayer;
-import com.imdeity.deitynether.obj.DeityPlayer;
-import com.imdeity.deitynether.util.NetherTime;
 
 public class NetherSQL {
 
 	private Connection conn = null;
-	private DeityNether plugin = null;
-	private NetherTime nt = null;
 	private String db, address, usr, pass;
 	private int port;
 	
-	public NetherSQL(DeityNether instance) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
-		plugin = instance;
-		nt = new NetherTime(plugin);
+	public NetherSQL() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		Class.forName("com.mysql.jdbc.Driver").newInstance();
-		db = plugin.config.getMySqlDatabaseName();
-		address = plugin.config.getMySqlServerAddress();
-		port = plugin.config.getMySqlServerPort();
-		usr = plugin.config.getMySqlDatabaseUsername();
-		pass = plugin.config.getMySqlDatabasePassword();
+		db = DeityNether.config.getMySqlDatabaseName();
+		address = DeityNether.config.getMySqlServerAddress();
+		port = DeityNether.config.getMySqlServerPort();
+		usr = DeityNether.config.getMySqlDatabaseUsername();
+		pass = DeityNether.config.getMySqlDatabasePassword();
 		connect();
 		createTables();
-		setDefaultResetStatus();
 	}
 
 	public void connect() throws SQLException{
@@ -62,83 +51,6 @@ public class NetherSQL {
 		}
 	}
 	
-	private void setDefaultResetStatus() {
-		
-	}
-	
-	public void setJoinTime(Player p){
-		try {
-			String name = p.getName();
-			String sql = "SELECT * FROM `nether_actions` WHERE `player`='" + name + "'";
-			ResultSet rs = getResultSet(sql);
-			if(!rs.next()){ //Row doesn't exist
-				sql = "INSERT INTO `nether_actions` (`player`, `action`) VALUES ('" + name + "' , 'join')";
-				statement(sql);
-				sql = "INSERT INTO `nether_stats` (`player`) VALUES ('" + name + "')";
-				statement(sql);
-			}else{ //Row exists
-				sql = "UPDATE `nether_actions` SET `action`='join', `time`=NOW() WHERE `player`='" + name + "'" ;
-				statement(sql);
-				sql = "UPDATE `nether_stats` SET  `time_in_nether`='0' WHERE `player`='" + name + "'";
-				statement(sql);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void setLeaveTime(Player player, boolean playerDied){
-		try {
-			String sql;
-			sql = "UPDATE `nether_actions` SET `action`='leave', `time`=NOW() WHERE `player`='" + player.getName() + "'";
-			statement(sql);
-			if(playerDied){
-				sql = "UPDATE `nether_stats` SET `time_in_nether`='3600'";
-				statement(sql);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void addTime(Player p){
-		try {
-			int timeWaited = DeityPlayer.getTimeWaited(p, plugin);
-			int timeInNether = DeityPlayer.getTimeInNether(p, plugin);
-			if(timeInNether != 3600){
-				String sql = "UPDATE `nether_stats` SET `time_in_nether`='" + (timeWaited + 1) + "' WHERE `player`='" + p.getName() + "'";
-				statement(sql);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void addWaitTime(Player p){
-		try {
-			int timeWaited = DeityPlayer.getTimeWaited(p, plugin);
-			int timeInNether = DeityPlayer.getTimeInNether(p, plugin);
-			if(timeInNether == 3600){
-				String sql = "UPDATE `nether_stats` SET `time_waited`='" + (timeWaited + 1) + "' WHERE `player`='" + p.getName() + "'";
-				statement(sql);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void addWaitTime(OfflinePlayer p){
-		try {
-			int timeWaited = DeityOfflinePlayer.getTimeWaited(p, plugin);
-			String sql = "UPDATE `nether_stats` SET `time_waited`='" + (timeWaited + 1) + "' WHERE `player`='" + p.getName() + "'";
-			if(timeWaited < nt.neededWaitTime)
-				statement(sql);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public ResultSet getResultSet(String sql) throws SQLException{
 		ensureConnection();
 		PreparedStatement stmt = conn.prepareStatement(sql);
@@ -149,7 +61,7 @@ public class NetherSQL {
 		return new Timestamp(System.currentTimeMillis());
 	}
 	
-	private void statement(String sql) throws SQLException{
+	public void statement(String sql) throws SQLException{
 		ensureConnection();
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.executeUpdate();

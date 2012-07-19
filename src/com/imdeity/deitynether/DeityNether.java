@@ -1,130 +1,101 @@
 package com.imdeity.deitynether;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.logging.Logger;
 
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.entity.Player;
+import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.imdeity.deitynether.cmd.NetherCommand;
 import com.imdeity.deitynether.listener.NetherWatcher;
-import com.imdeity.deitynether.obj.DeityPlayer;
 import com.imdeity.deitynether.sql.NetherSQL;
-import com.imdeity.deitynether.util.PlayerPorter;
 import com.imdeity.deitynether.util.WorldManager;
 
 public class DeityNether extends JavaPlugin{
 
-	private File configFile = new File("plugins/DeityNether/config.yml"); //No need for File.pathSeparator, as '/' works with any OS
-	public Config config = new Config(configFile);
-	public WorldManager wm = new WorldManager(this);
-	public PlayerPorter porter = new PlayerPorter(this);
-	public NetherWatcher watcher = new NetherWatcher(this);
-	public NetherSQL mysql = null;
-	public static boolean hasError = false;
+	public static DeityNether plugin;
+	public static Config config;
+	public static Server server;
+	public static NetherSQL db;
+	private NetherWatcher watcher;
+	public WorldManager wm = new WorldManager();
+	private boolean hasError = false;
 	public boolean needsSpawn = false;
 	public static final String GENERAL_PERMISSION = "Deity.nether.general";
 	public static final String OVERRIDE_PERMISSION = "Deity.nether.override";
 	
 	public void onDisable(){
-		for(Player p : getServer().getWorld(config.getNetherWorldName()).getPlayers()){
-			porter.sendToOverworld(p);
-		}
 		info("Disabled");
 	}
 	
 	public void onEnable(){
-		CommandExecutor executor = new NetherCommand(this);
-		addDataFolders();
-		getCommand("nether").setExecutor(executor);
-		info("Loading config...");
-		config.loadDefaults();
-		checkNetherDeletionStatus();
+		//TODO check if nether needs deleting (set needsSpawn to true if so)
+		//TODO delete nether if needed
+		plugin = this;
+		server = this.getServer();
+		getCommand("nether").setExecutor(new NetherCommand());
+		initConfig();
 		try {
-			setup();
-			info("[MySQL] Connected!");
+			initDatabase();
+			info("[MySQL] Connect to server");
 		} catch (Exception e) {
-			info("MySQL setup incorrectly, check the config.yml");
 			hasError = true;
+			info("[MySQL] Failed to connect. Did you check the config.yml?");
 		}
 		if(!hasError){
-			getServer().getPluginManager().registerEvents(watcher, this);
-			getServer().getScheduler().scheduleSyncRepeatingTask(this, watcher, 0L, 20L); //No delay, repeats every 20 ticks (1 second)
+			watcher = new NetherWatcher();
+			server.getPluginManager().registerEvents(watcher, plugin);
+			server.getScheduler().scheduleSyncRepeatingTask(plugin, watcher, 0, 20);
 		}
-		info("Enabled");
+		checkNetherDeletion();
 	}
 	
-	public void info(String message){
-		Logger.getLogger("Minecraft").info("[DeityNether] " + message);
-	}
-	
-	private void addDataFolders(){
-		try{
-			createDirs(configFile);
-		}catch(IOException e){
-			e.printStackTrace();
-		}
-	}
-	
-	public void broadcastMessage(String message){
-		getServer().broadcastMessage(message);
-	}
-	
-	public void checkNetherResetStatus(){
-		int days = config.getRegenerationInterval();
-		String ts = config.getLastReset();
-		Timestamp reset = Timestamp.valueOf(ts);
-		reset.setTime(reset.getTime() + (days * 24 * 60 * 60 * 1000));
-		Timestamp now = new Timestamp(System.currentTimeMillis());
-		if(now.equals(reset) || now.after(reset)){
-			config.setResetStatus(true);
-		}
-	}
-	
-	private void checkNetherDeletionStatus(){
-		boolean needsDeleting = config.getResetStatus();
-		if(needsDeleting){
-			info("Deleteing the Nether...");
-			wm.deleteWorld(config.getNetherWorldName());
-			config.setLastReset();
-			info("Nether deleted!");
-			info("Resetting spawn height...");
+	private void checkNetherDeletion() {
+		boolean needsDeletion = DeityNether.config.getResetStatus();
+		if(needsDeletion){
+			info("Deleting Nether...");
+			DeityNether.plugin.wm.deleteWorld(DeityNether.config.getNetherWorldName());
+			info("Nether Deleted! Spawn will be create when the first player enters the nether");
 			config.setNetherSpawnY(64);
+			config.setLastReset();
 			needsSpawn = true;
-			info("Spawn will be created when the first player joins the nether");
 		}else{
 			info("Nether doesn't need to be deleted");
 		}
 	}
-	
-	private void createDirs(File file) throws IOException{	//Code taken from my own plugin, Admins
-		if(!file.exists()){
-			info("Cannot find /" + file.getPath().substring(20) +", creating new file...");
-			if(file.getParentFile() != null)
-				file.getParentFile().mkdirs();
-			if(file.getPath().endsWith(".txt") || file.getPath().endsWith(".yml")){
-				file.createNewFile();
-			}else{
-				file.mkdir();
-			}
-		}
+
+	private void initDatabase() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
+		info("[MySQL] Loading MySQL database...");
+		db = new NetherSQL();
 	}
 	
-	private void setup() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
-			mysql = new NetherSQL(this);
+	private void initConfig(){
+		info("Loading config...");
+		config = new Config(new File(getDataFolder() + "/config.yml"));
+		config.addDefaultConfigValue("world.nether.regeneration-interval-in-days", 7);
+		config.addDefaultConfigValue("world.nether.needs-regeneration", true);
+		config.addDefaultConfigValue("world.nether.wait-time-in-hours", 12);
+		config.addDefaultConfigValue("world.nether.name", "world_nether");
+		config.addDefaultConfigValue("world.nether.pigman-gold-drop-chance", 10);
+		config.addDefaultConfigValue("world.nether.gold-blocks-needed", 1);
+		config.addDefaultConfigValue("world.nether.last-reset", new Timestamp(System.currentTimeMillis()).toString());
+		config.addDefaultConfigValue("world.main.name", "world");
+		config.addDefaultConfigValue("spawn.nether.x", 0);
+		config.addDefaultConfigValue("spawn.nether.y", 64);
+		config.addDefaultConfigValue("spawn.nether.z", 0);						//MySQL options
+		config.addDefaultConfigValue("mysql.database.name", "kingdoms");
+		config.addDefaultConfigValue("mysql.database.username", "root");
+		config.addDefaultConfigValue("mysql.database.password", "root");
+		config.addDefaultConfigValue("mysql.server.address", "localhost");
+		config.addDefaultConfigValue("mysql.server.port", 3306);
+		info("Saving config...");
+		config.save();
 	}
 	
-	public void sendHelp(Player p){
-		DeityPlayer.sendPluginHelp(p);
-	}
-	
-	public void sendInfo(Player p){
-		DeityPlayer.sendPluginInformation(p);
-		
+	public void info(String msg){
+		Logger.getLogger("Minecraft").info("[DeityNether] " + msg);
 	}
 	
 }

@@ -1,5 +1,7 @@
 package com.imdeity.deitynether.listener;
 
+import java.sql.Timestamp;
+
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World.Environment;
@@ -13,27 +15,25 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.imdeity.deitynether.DeityNether;
-import com.imdeity.deitynether.obj.DeityPlayer;
+import com.imdeity.deitynether.util.ChatUtils;
 import com.imdeity.deitynether.util.NetherTime;
 import com.imdeity.deitynether.util.PlayerPorter;
+import com.imdeity.deitynether.util.PlayerStats;
 
 public class NetherWatcher implements Listener, Runnable{
 
-	private DeityNether plugin = null;
-	private NetherTime nt = null;
+	private ChatUtils cu = new ChatUtils();
 	private PlayerPorter porter = null;
 	
-	public NetherWatcher(DeityNether instance){
-		plugin = instance;
-		nt = new NetherTime(plugin);
-		porter = new PlayerPorter(plugin);
+	public NetherWatcher(){
+		porter = new PlayerPorter();
 	}
 	
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event){
 		ItemStack drop = new ItemStack(Material.GOLD_NUGGET, 1);
 		Entity entity = event.getEntity();
-		int chance = plugin.config.getDropChance();
+		int chance = DeityNether.config.getDropChance();
 		if(entity instanceof PigZombie && entity.getWorld().getEnvironment() == Environment.NETHER){
 			event.getDrops().clear();
 			event.getDrops().add(new ItemStack(Material.ROTTEN_FLESH));
@@ -42,43 +42,51 @@ public class NetherWatcher implements Listener, Runnable{
 				event.getDrops().add(drop);
 			}
 		}else if(entity instanceof Player){
-			plugin.mysql.setLeaveTime((Player)event.getEntity(), true);
+			PlayerStats.setLeaveTime((Player)event.getEntity(), true);
 		}
 	}
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event){
 		Player player = event.getPlayer();
-		if(player.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName()))
-			porter.sendToOverworld(player);
+		if(player.getWorld() == DeityNether.plugin.getServer().getWorld(DeityNether.config.getNetherWorldName()))
+			if(!player.hasPermission(DeityNether.OVERRIDE_PERMISSION) && player.hasPermission(DeityNether.GENERAL_PERMISSION)){
+				porter.sendToOverworld(player, true);
+			}else if(player.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
+				porter.sendToOverworld(player, false);
+			}
 	}
 
 	@Override
 	public void run() {
-		for(Player p : plugin.getServer().getOnlinePlayers()){
-			if(p.getWorld() == plugin.getServer().getWorld(plugin.config.getNetherWorldName())){
+		for(Player p : DeityNether.plugin.getServer().getOnlinePlayers()){
+			if(p.getWorld() == DeityNether.plugin.getServer().getWorld(DeityNether.config.getNetherWorldName())){
 				if(!p.hasPermission(DeityNether.OVERRIDE_PERMISSION) && p.hasPermission(DeityNether.GENERAL_PERMISSION)){
-					plugin.mysql.addTime(p);
+					PlayerStats.addTime(p);
 					checkPlayer(p);
 				}
 			}else{
-				if(DeityPlayer.getTimeWaited(p, plugin) != nt.neededWaitTime)
-					plugin.mysql.addWaitTime(p);
+				if(PlayerStats.getTimeWaited(p) != NetherTime.NEEDED_WAIT_TIME)
+					PlayerStats.addWaitTime(p);
 			}
 		}
 		
-		for(OfflinePlayer p : plugin.getServer().getOfflinePlayers()){
-				plugin.mysql.addWaitTime(p);
+		for(OfflinePlayer p : DeityNether.plugin.getServer().getOfflinePlayers()){
+				PlayerStats.addWaitTime(p);
 		}
 		
-		plugin.checkNetherResetStatus();
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		Timestamp nextReset = DeityNether.config.getNextReset();
+		if(now.after(nextReset) || now.equals(nextReset)){
+			DeityNether.config.setResetStatus(true);
+		}
 	}
 	
 	private void checkPlayer(Player p){
-		if(!p.hasPermission(DeityNether.OVERRIDE_PERMISSION)){
-			if(DeityPlayer.getTimeInNether(p, plugin) == 3600){			//Their time is up
-				DeityPlayer.sendThanksMessage(p, plugin);				//"Thank you for entering the nether you may again in <config-value> hours
-				p.teleport(plugin.config.getMainWorldSpawn());
+		if(!p.hasPermission(DeityNether.OVERRIDE_PERMISSION) && p.hasPermission(DeityNether.GENERAL_PERMISSION)){
+			if(PlayerStats.getTimeInNether(p) == 3600){//Their time is up
+				cu.sendThanksMessage(p);//"Thank you for entering the nether you may again in <config-value> hours
+				p.teleport(DeityNether.config.getMainWorldSpawn());
 			}
 		}
 	}

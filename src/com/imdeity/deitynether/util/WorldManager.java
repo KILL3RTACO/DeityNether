@@ -8,7 +8,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.imdeity.deitynether.DeityNether;
-import com.imdeity.deitynether.obj.DeityPlayer;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -21,11 +20,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 
 public class WorldManager {
 
-	private DeityNether plugin = null;
-	
-	public WorldManager(DeityNether instance){
-		plugin = instance;
-	}
+	private ChatUtils cu = new ChatUtils();
 	
 	public boolean deleteWorld(String worldName){
 		return deleteFilesInFolder(new File(worldName + "/"));
@@ -33,11 +28,11 @@ public class WorldManager {
 	
 	public void setNetherRegenStatus(Player p, boolean status){
 		if(p.isOp()){
-			plugin.config.setResetStatus(status);
-			DeityPlayer.sendInfoMessage("%dNether reset status set to: %b" + status, p);
-			plugin.info(p.getName() + " set the regeneration status of the nether to: " + status);
+			DeityNether.config.setResetStatus(status);
+			cu.sendInfoMessage("%dNether reset status set to: %b" + status, p);
+			DeityNether.plugin.info(p.getName() + " set the regeneration status of the nether to: " + status);
 		}else{
-			DeityPlayer.sendInvalidPermissionMessage(p);
+			cu.sendInvalidPermissionMessage(p);
 		}
 	}
 	
@@ -45,18 +40,18 @@ public class WorldManager {
 		center = getNewCenter(center);
 		int r = 10;
 		int h = 5;
-		World nether = plugin.getServer().getWorld(plugin.config.getNetherWorldName());
+		World nether = DeityNether.server.getWorld(DeityNether.config.getNetherWorldName());
 		Location corner1 = new Location(nether, center.getBlockX() - r, center.getBlockY(), center.getBlockZ() - r);
 		Location corner2 = new Location(nether, center.getBlockX() + r, center.getBlockY() + h, center.getBlockZ() + r);
 		Location corner3 = new Location(nether, center.getBlockX() + r, center.getBlockY(), center.getBlockZ() + r);
 		cuboid(corner1, corner2, Material.AIR);
 		cuboid(corner1, corner3, Material.COBBLESTONE);
-		plugin.config.setNetherSpawnY(center.getBlockY());
-		plugin.info("Nether spawn height set to: " + center.getBlockY());
+		DeityNether.config.setNetherSpawnY(center.getBlockY());
+		DeityNether.plugin.info("Nether spawn height set to: " + center.getBlockY());
 	}
 	
 	private void cuboid(Location p1, Location p2, Material type){
-		World world = plugin.getServer().getWorld(plugin.config.getNetherWorldName());
+		World world = DeityNether.server.getWorld(DeityNether.config.getNetherWorldName());
 		LocalWorld localWorld = new BukkitWorld(world);
 		EditSession es = new EditSession(localWorld, 3000);	//3000 is the change limit
 		Vector pos1 = new Vector().setX(p1.getBlockX()).setY(p1.getBlockY()).setZ(p1.getBlockZ());
@@ -71,7 +66,7 @@ public class WorldManager {
 	}
 	
 	private Location getNewCenter(Location origin){
-		World nether = plugin.getServer().getWorld(plugin.config.getNetherWorldName());
+		World nether = DeityNether.server.getWorld(DeityNether.config.getNetherWorldName());
 		if(origin.getBlock().getType() != Material.AIR){
 			for(int y = 127; y <= 0; y--){
 				Location center = new Location(nether, origin.getBlockX(), y, origin.getBlockY());

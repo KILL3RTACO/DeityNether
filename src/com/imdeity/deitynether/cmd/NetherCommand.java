@@ -7,56 +7,48 @@ import org.bukkit.entity.Player;
 
 import com.imdeity.deitynether.DeityNether;
 import com.imdeity.deitynether.util.ChatUtils;
-import com.imdeity.deitynether.util.NetherTime;
 
 public class NetherCommand implements CommandExecutor{
 
-	private DeityNether plugin = null;
-	private NetherTime nt = null;
 	private ChatUtils cu = new ChatUtils();
-	
-	public NetherCommand(DeityNether instance){
-		plugin = instance;
-		nt = new NetherTime(plugin);
-	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		Player p;
-		if(sender instanceof Player){
-			p = (Player)sender;
-			if(args.length == 0){
-				p.sendMessage("Hai there ^o^");
-			}else if(args.length == 1){
-				if(args[0].equalsIgnoreCase("?") || args[0].equalsIgnoreCase("help")){
-					plugin.sendHelp(p);
-				}else if(args[0].equalsIgnoreCase("info")){
-					plugin.sendInfo(p);
-				}else if(args[0].equalsIgnoreCase("join")){
-					plugin.porter.sendToNether(p);
-				}else if(args[0].equalsIgnoreCase("leave")){
-					plugin.porter.sendToOverworld(p);
-				}else if(args[0].equalsIgnoreCase("time")){
-					nt.getTimeLeft(p);
-				}else{
-					p.sendMessage(cu.format("%cInvalid argument(s), please use %f\"/nether ?\" %cfor help", true));
-				}
-			}else if(args.length == 2){
-				if(args[0].equalsIgnoreCase("regen")){
-					if(args[1].equalsIgnoreCase("on"))
-						plugin.wm.setNetherRegenStatus(p, true);
-					else if(args[1].equalsIgnoreCase("off"))
-						plugin.wm.setNetherRegenStatus(p, false);
-					else
-						p.sendMessage(cu.format("%cInvalid argument(s), please use %f\"/nether ?\" %cfor help", true));
+		if(args.length > 0){
+			if(sender instanceof Player){
+				Player p = (Player)sender;
+				String subcommand = args[0];
+				if(subcommand.equalsIgnoreCase("join")){
+					new JoinSubCommand(p);
+				}else if(subcommand.equals("leave")){
+					new LeaveSubCommand(p);
+				}else if(subcommand.equalsIgnoreCase("time")){
+					new TimeSubCommand(p);
+				}else if(subcommand.equalsIgnoreCase("regen") && args.length > 1){
+					if(p.isOp()){
+						p.sendMessage(cu.format("&4You don't have permission to do that", true));
+					}else{
+						if(args[1].equalsIgnoreCase("on")){
+							DeityNether.config.setResetStatus(true);
+							p.sendMessage(cu.format("&dNether reset status set to: &3true", true));
+							DeityNether.plugin.info(p.getName() + "set the nether deletion status to true. It will be deleted upon next restart");
+						}else if(args[1].equalsIgnoreCase("off")){
+							DeityNether.config.setResetStatus(false);
+							p.sendMessage(cu.format("&dNether reset status set to: &3false", true));
+							DeityNether.plugin.info(p.getName() + "set the nether deletion status to false");
+						}
+					}
+				}else if(subcommand.equalsIgnoreCase("?") || subcommand.equalsIgnoreCase("help")){
+					p.sendMessage("-----[DeityNether: Help]-----");
+					p.sendMessage(cu.format("&3/nether join&7: &bEnter the nether", false));
+					p.sendMessage(cu.format("&3/nether leave&7: &bLeave the nether", false));
+					p.sendMessage(cu.format("&3/nether time&7: &bSee how much time you have left", false));
+					if(p.isOp()) p.sendMessage(cu.format("&3/nether regen <on/off>&7: &bSet the deletion status of the nether", false));
+					p.sendMessage(cu.format("&3/nether ?&7: &bDisplays this menu", false));
 				}
 			}
-		}else{
-			plugin.info("You must be logged in to do this, Deity ;)");
 		}
 		return true;
 	}
-
-	
 	
 }
