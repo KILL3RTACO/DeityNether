@@ -6,11 +6,13 @@ import java.sql.Timestamp;
 import java.util.logging.Logger;
 
 import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.imdeity.deitynether.cmd.NetherCommand;
 import com.imdeity.deitynether.listener.NetherWatcher;
 import com.imdeity.deitynether.sql.NetherSQL;
+import com.imdeity.deitynether.util.PlayerPorter;
 import com.imdeity.deitynether.util.WorldManager;
 
 public class DeityNether extends JavaPlugin{
@@ -28,6 +30,14 @@ public class DeityNether extends JavaPlugin{
 	public static final String OVERRIDE_PERMISSION = "Deity.nether.override";
 	
 	public void onDisable(){
+		for(Player p : server.getWorld(config.getNetherWorldName()).getPlayers()){
+			PlayerPorter porter = new PlayerPorter();
+			if(p.hasPermission(OVERRIDE_PERMISSION)){
+				porter.sendToOverworld(p, false);
+			}else if(p.hasPermission(GENERAL_PERMISSION)){
+				porter.sendToOverworld(p,  true);
+			}
+		}
 		info("Disabled");
 	}
 	
@@ -54,7 +64,7 @@ public class DeityNether extends JavaPlugin{
 	}
 	
 	private void checkNetherDeletion() {
-		boolean needsDeletion = DeityNether.config.getResetStatus();
+		boolean needsDeletion = config.getResetStatus();
 		if(needsDeletion){
 			info("Deleting Nether...");
 			DeityNether.plugin.wm.deleteWorld(DeityNether.config.getNetherWorldName());
@@ -92,10 +102,32 @@ public class DeityNether extends JavaPlugin{
 		config.addDefaultConfigValue("mysql.database.password", "root");
 		config.addDefaultConfigValue("mysql.server.address", "localhost");
 		config.addDefaultConfigValue("mysql.server.port", 3306);
-		lang.addDefaultValue("header", "&7[&cDeityNether&] &f");
-		lang.addDefaultValue("nether.join", "");
 		info("Saving config...");
 		config.save();
+		
+		info("Loading language file...");
+		lang.addDefaultValue("header", "&7[&c*ImDeity*&7]&f");
+		lang.addDefaultValue("nether.join", "%header &aTeleporting you to the nether...");
+		lang.addDefaultValue("nether.leave", "%header &aTeleporting you to the main world...");
+		lang.addDefaultValue("nether.time.play.time_left", "%header &aYou have &2%numMin %numSec &aleft in the nether");
+		lang.addDefaultValue("nether.time.play.override", "%header &2You can stay here as long as you want honey <3");
+		lang.addDefaultValue("nether.time.play.perm_error", "%header %4o.O how did you get in here? I call h4x0r!");
+		lang.addDefaultValue("nether.time.wait.time_left", "%header &aYou need to wait &2%numHour %numMin %numSec");
+		lang.addDefaultValue("nether.time.wait.override", "%header &2You can visit anytime babe <3");
+		lang.addDefaultValue("nether.time.wait.perm_error", "%header %4¡Qué Lastíma! You can't visit the nether");
+		lang.addDefaultValue("nether.thanks", "%header &2So long, and thanks for all the fish! ^o^"); //I love that movie
+		lang.addDefaultValue("nether.regen", "%header &dNether regen status set to: &b%bool");
+		lang.addDefaultValue("nether.error.permissions", "%header &4You don't have permission to do that");
+		lang.addDefaultValue("nether.error.arguments", "%header &4Invalid argument(s), use \"&f/nether ?&4\" for help");
+		lang.addDefaultValue("nether.error.not_in_nether", "%header &4You aren't in the nether silly");
+		lang.addDefaultValue("nether.error.need_to_wait", "%header &4Sorry you need to wait &6%numHour %numMin %numSec");
+		lang.addDefaultValue("nether.error.already_in_nether", "%header &4You are already in the nether. Look around, it's quite ovbious");
+		lang.addDefaultValue("nether.error.too_much_gold", "%header &4You have too much gold. I wouldn't mind taking it... But alas, I am only an entity :'(");
+		lang.addDefaultValue("nether.error.too_little_gold", "%header &4You do not have enough gold -_- Get moar nao! Omnomnomnom <3");
+		lang.addDefaultValue("nether.error.invalid_items", "%header &4You have items in your inventory that are not allowed in the Nether. " +
+								"Remove them and try again");
+		info("Saving language file...");
+		lang.save();
 	}
 	
 	public void info(String msg){

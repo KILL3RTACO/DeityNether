@@ -11,6 +11,8 @@ import com.imdeity.deitynether.DeityNether;
 
 public class PlayerStats {
 	
+	private static final int NEEDED_WAIT_TIME = DeityNether.config.getWaitTime();
+	
 	public static void setJoinTime(Player p){
 		try {
 			String name = p.getName();
@@ -77,7 +79,7 @@ public class PlayerStats {
 		try {
 			int timeWaited = getTimeWaited(p);
 			String sql = "UPDATE `nether_stats` SET `time_waited`='" + (timeWaited + 1) + "' WHERE `player`='" + p.getName() + "'";
-			if(timeWaited < NetherTime.NEEDED_WAIT_TIME)
+			if(timeWaited < NEEDED_WAIT_TIME)
 				DeityNether.db.statement(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -119,7 +121,7 @@ public class PlayerStats {
 			if(rs.next()){
 				return rs.getInt(1);
 			}else{ //Row does not exist, they haven't entered nether before, therefore they don't need to wait
-				return NetherTime.NEEDED_WAIT_TIME;
+				return NEEDED_WAIT_TIME;
 			}
 		} catch (SQLException e) {
 			return 0;
@@ -133,7 +135,7 @@ public class PlayerStats {
 			if(rs.next()){
 				return rs.getInt(1);
 			}else{ //Row does not exist, they haven't entered nether before, therefore they don't need to wait
-				return NetherTime.NEEDED_WAIT_TIME;
+				return NEEDED_WAIT_TIME;
 			}
 		} catch (SQLException e) {
 			return 0;
@@ -160,19 +162,20 @@ public class PlayerStats {
 			return false;
 		}
 	}
-	public static String getWaitTimeLeft(Player p){
-		int needToWait = NetherTime.NEEDED_WAIT_TIME - getTimeWaited(p);
-		int hours = needToWait / 3600;
-		int minutes = (needToWait % 3600) / 60;
-		int secs = (needToWait % 3600) % 60;
-		String h =  "", m = "", s = "";
-		if(hours != 0)
-			h = hours + "h ";
-		if(minutes != 0)
-			m = minutes + "m ";
-		if(secs != 0)
-			s = secs + "s ";
-		return "%6" + h + m + s;
+	
+	public static int getWaitHoursLeft(Player p){
+		int needToWait = NEEDED_WAIT_TIME - getTimeWaited(p);
+		return needToWait / 3600;
+	}
+	
+	public static int getWaitMinutesLeft(Player p){
+		int needToWait = NEEDED_WAIT_TIME - getTimeWaited(p);
+		return (needToWait % 3600) / 60;
+	}
+	
+	public static int getWaitSecondsLeft(Player p){
+		int needToWait = NEEDED_WAIT_TIME - getTimeWaited(p);
+		return (needToWait % 3600) % 60;
 	}
 	
 	public static int getMinutesLeft(Player p){
@@ -185,7 +188,7 @@ public class PlayerStats {
 	
 	public static boolean hasWaited(Player p){
 		int waited = getTimeWaited(p);
-		if(NetherTime.NEEDED_WAIT_TIME - waited == 0) return true;
+		if(NEEDED_WAIT_TIME - waited == 0) return true;
 		else return false;
 	}
 	

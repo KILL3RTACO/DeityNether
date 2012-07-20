@@ -20,7 +20,6 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 
 public class WorldManager {
 
-	private ChatUtils cu = new ChatUtils();
 	
 	public boolean deleteWorld(String worldName){
 		return deleteFilesInFolder(new File(worldName + "/"));
@@ -29,10 +28,10 @@ public class WorldManager {
 	public void setNetherRegenStatus(Player p, boolean status){
 		if(p.isOp()){
 			DeityNether.config.setResetStatus(status);
-			cu.sendInfoMessage("%dNether reset status set to: %b" + status, p);
+			p.sendMessage(DeityNether.lang.formatRegenStatus(status));
 			DeityNether.plugin.info(p.getName() + " set the regeneration status of the nether to: " + status);
 		}else{
-			cu.sendInvalidPermissionMessage(p);
+			p.sendMessage(DeityNether.lang.formatInvalidPermissions());
 		}
 	}
 	
@@ -86,7 +85,6 @@ public class WorldManager {
 				deleteFilesInFolder(f);
 			}
 		}
-		
 		return folder.delete();
 	}
 	

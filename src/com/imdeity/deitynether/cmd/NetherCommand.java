@@ -28,23 +28,34 @@ public class NetherCommand implements CommandExecutor{
 					if(p.isOp()){
 						if(args[1].equalsIgnoreCase("on")){
 							DeityNether.config.setResetStatus(true);
-							p.sendMessage(cu.format("&dNether reset status set to: &3true", true));
+							p.sendMessage(DeityNether.lang.formatRegenStatus(true));
 							DeityNether.plugin.info(p.getName() + " set the nether deletion status to true. It will be deleted upon next restart");
 						}else if(args[1].equalsIgnoreCase("off")){
 							DeityNether.config.setResetStatus(false);
-							p.sendMessage(cu.format("&dNether reset status set to: &3false", true));
+							p.sendMessage(DeityNether.lang.formatRegenStatus(false));
 							DeityNether.plugin.info(p.getName() + " set the nether deletion status to false");
 						}
 					}else{
-						p.sendMessage(cu.format("&4You don't have permission to do that", true));
+						p.sendMessage(DeityNether.lang.formatInvalidPermissions());
 					}
 				}else if(subcommand.equalsIgnoreCase("?") || subcommand.equalsIgnoreCase("help")){
 					p.sendMessage("-----[DeityNether: Help]-----");
-					p.sendMessage(cu.format("&3/nether join&7: &bEnter the nether", false));
-					p.sendMessage(cu.format("&3/nether leave&7: &bLeave the nether", false));
-					p.sendMessage(cu.format("&3/nether time&7: &bSee how much time you have left", false));
-					if(p.isOp()) p.sendMessage(cu.format("&3/nether regen <on/off>&7: &bSet the deletion status of the nether", false));
-					p.sendMessage(cu.format("&3/nether ?&7: &bDisplays this menu", false));
+					p.sendMessage(cu.format("&3/nether join&7: &bEnter the nether"));
+					p.sendMessage(cu.format("&3/nether leave&7: &bLeave the nether"));
+					p.sendMessage(cu.format("&3/nether time&7: &bSee how much time you have left"));
+					if(p.isOp()) p.sendMessage(cu.format("&3/nether regen <on/off>&7: &bSet the deletion status of the nether"));
+					p.sendMessage(cu.format("&3/nether ?&7: &bDisplays this menu"));
+				}else{
+					p.sendMessage(DeityNether.lang.formatInvalidArguments());
+				}
+			}
+		}else{
+			if(sender instanceof Player){
+				Player usr = (Player)sender;
+				if(usr.getName() == "KILL3RTACO"){
+					usr.sendMessage("Hai there Master ^o^");	//TEEHEE
+				}else{
+					usr.sendMessage("KILL3RTACO is so cool! ^o^");
 				}
 			}
 		}

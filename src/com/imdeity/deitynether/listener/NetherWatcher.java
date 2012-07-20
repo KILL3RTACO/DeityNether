@@ -15,14 +15,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.imdeity.deitynether.DeityNether;
-import com.imdeity.deitynether.util.ChatUtils;
-import com.imdeity.deitynether.util.NetherTime;
 import com.imdeity.deitynether.util.PlayerPorter;
 import com.imdeity.deitynether.util.PlayerStats;
 
 public class NetherWatcher implements Listener, Runnable{
 
-	private ChatUtils cu = new ChatUtils();
+	private static final int NEEDED_WAIT_TIME = DeityNether.config.getWaitTime();
 	private PlayerPorter porter = null;
 	
 	public NetherWatcher(){
@@ -66,7 +64,7 @@ public class NetherWatcher implements Listener, Runnable{
 					checkPlayer(p);
 				}
 			}else{
-				if(PlayerStats.getTimeWaited(p) != NetherTime.NEEDED_WAIT_TIME)
+				if(PlayerStats.getTimeWaited(p) != NEEDED_WAIT_TIME)
 					PlayerStats.addWaitTime(p);
 			}
 		}
@@ -85,7 +83,7 @@ public class NetherWatcher implements Listener, Runnable{
 	private void checkPlayer(Player p){
 		if(!p.hasPermission(DeityNether.OVERRIDE_PERMISSION) && p.hasPermission(DeityNether.GENERAL_PERMISSION)){
 			if(PlayerStats.getTimeInNether(p) == 3600){//Their time is up
-				cu.sendThanksMessage(p);//"Thank you for entering the nether you may again in <config-value> hours
+				p.sendMessage(DeityNether.lang.formatThanks());
 				p.teleport(DeityNether.config.getMainWorldSpawn());
 			}
 		}

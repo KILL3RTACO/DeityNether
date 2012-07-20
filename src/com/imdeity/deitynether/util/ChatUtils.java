@@ -1,25 +1,10 @@
 package com.imdeity.deitynether.util;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 public class ChatUtils {
 	
-	private String header = format("&7[&c*ImDeity*&7]&f ", false);
-	
-	public void sendErrorMessage(String msg, Player p){
-		p.sendMessage(format("&c" +  msg, true));
-	}
-	
-	public void sendInfoMessage(String msg, Player p){
-		p.sendMessage(format(msg, true));
-	}
-
-	public void sendThanksMessage(Player p) {
-		p.sendMessage(format("&aThank you for visiting the nether you can come back in &4" + PlayerStats.getWaitTimeLeft(p), true));
-	}
-	
-	public String format(String message, boolean addHeader){
+	public String format(String message){
 		if(message.contains("&a"))						//letters
 			message = message.replaceAll("&a", ChatColor.GREEN.toString());
 		if(message.contains("&b"))
@@ -53,14 +38,7 @@ public class ChatUtils {
 			message = message.replaceAll("&8", ChatColor.DARK_GRAY.toString());
 		if(message.contains("&9"))
 			message = message.replaceAll("&9", ChatColor.BLUE.toString());
-
-		if(addHeader)
-			message = header + message;
 		
 		return message;
-	}
-
-	public void sendInvalidPermissionMessage(Player p) {
-		p.sendMessage(format("&4You don't have permission to do that", true));
 	}
 }
