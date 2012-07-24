@@ -8,15 +8,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.imdeity.deitynether.DeityNether;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.bukkit.BukkitWorld;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
-import com.sk89q.worldedit.regions.CuboidRegion;
 
 public class WorldManager {
 
@@ -51,16 +42,12 @@ public class WorldManager {
 	
 	private void cuboid(Location p1, Location p2, Material type){
 		World world = DeityNether.server.getWorld(DeityNether.config.getNetherWorldName());
-		LocalWorld localWorld = new BukkitWorld(world);
-		EditSession es = new EditSession(localWorld, 3000);	//3000 is the change limit
-		Vector pos1 = new Vector().setX(p1.getBlockX()).setY(p1.getBlockY()).setZ(p1.getBlockZ());
-		Vector pos2 = new Vector().setX(p2.getBlockX()).setY(p2.getBlockY()).setZ(p2.getBlockZ());
-		CuboidRegion region = new CuboidRegion(localWorld, pos1, pos2);
-		Pattern pattern = new SingleBlockPattern(new BaseBlock(type.getId()));
-		try {
-			es.setBlocks(region, pattern);
-		} catch (MaxChangedBlocksException e) {
-			e.printStackTrace();
+		for(int x = p1.getBlockX(); x <= p2.getBlockX(); x++){
+			for(int y = p1.getBlockY(); x <= p2.getBlockY(); y++){
+				for(int z = p1.getBlockZ(); x <= p2.getBlockZ(); z++){
+					new Location(world, x, y, z).getBlock().setType(type);
+				}
+			}
 		}
 	}
 	

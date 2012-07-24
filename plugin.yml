@@ -3,7 +3,6 @@ main: com.imdeity.deitynether.DeityNether
 version: 2.1
 description: Nether plugin for ImDeity Kingdoms
 load: startup
-depend: [WorldEdit]
 commands:
   nether:
     description: Go to the nether
